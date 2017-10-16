@@ -1,0 +1,55 @@
+package ballerina.lang.pmml;
+
+import ballerina.lang.errors;
+import ballerina.lang.xmls;
+
+function getDataFieldElements (xml pmml) (xml) {
+    if (!isValid(pmml)) {
+        throw invalidPMMLFileError();
+    }
+
+    xml dataDictionary = getDataDictionaryElement(pmml);
+    xml dataFields = xmls:children(dataDictionary);
+    return dataFields;
+}
+
+function getDataFieldElement (xml pmml, int elementNumber) (xml) {
+    if (!isValid(pmml)) {
+        throw invalidPMMLFileError();
+    }
+
+    xml dataFieldElements = getDataFieldElements(pmml);
+    xml dataFieldElement = null;
+    try {
+        dataFieldElement = xmls:slice(xmls:elements(dataFieldElements), elementNumber, elementNumber + 1);
+    } catch (errors:Error e) {
+        errors:Error err = {msg:"The data field of index " + elementNumber + " does not exist"};
+        throw err;
+    }
+    return dataFieldElement;
+}
+
+
+function getDataFieldType (xml dataFieldElement) {
+    // TODO complete implementation
+}
+
+function getNumberOfDataFields (xml pmml) (int) {
+    if (!isValid(pmml)) {
+        throw invalidPMMLFileError();
+    }
+    
+    xml dataFieldElements = xmls:elements(getDataFieldElements(pmml));
+    int index = 0;
+    int numberOfDataFields = 0;
+    while (true) {
+        try {
+            xmls:slice(dataFieldElements, index, index + 1);
+            index = index + 1;
+            numberOfDataFields = numberOfDataFields + 1;
+        } catch (errors:Error e) {
+            break;
+        }
+    }
+    return numberOfDataFields;
+}
