@@ -22,6 +22,7 @@ function isValid (xml pmml) (boolean) {
     xmlns "http://www.dmg.org/PMML-4_2" as ns2;
     xmlns "http://www.dmg.org/PMML-4_3" as ns3;
     string pmmlVersion = pmml@["version"];
+    // TODO check whether the pmml has a valid ML model element
     // Check whether the XML is a valid PMML element.
     if (!isEmpty && itemType == "element" && isSingleton) {
         if (elementName == ns1:PMML || elementName == ns2:PMML || elementName == ns3:PMML) {

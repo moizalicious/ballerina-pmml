@@ -30,15 +30,17 @@ function getDataFieldElement (xml pmml, int elementNumber) (xml) {
 }
 
 
-function getDataFieldType (xml dataFieldElement) {
-    // TODO complete implementation
+function getDataFieldType (xml pmml, int elementNumber) (string) {
+    xml dataFieldElement = getDataFieldElement(pmml, elementNumber);
+    string optype = dataFieldElement@["optype"];
+    return optype;
 }
 
 function getNumberOfDataFields (xml pmml) (int) {
     if (!isValid(pmml)) {
         throw invalidPMMLFileError();
     }
-    
+
     xml dataFieldElements = xmls:elements(getDataFieldElements(pmml));
     int index = 0;
     int numberOfDataFields = 0;

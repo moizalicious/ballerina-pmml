@@ -1,6 +1,7 @@
 package ballerina.lang.pmml;
 
 import ballerina.lang.xmls;
+import ballerina.lang.errors;
 import ballerina.lang.system;
 
 function executeRegressionModel (xml pmml, any[] data) {
