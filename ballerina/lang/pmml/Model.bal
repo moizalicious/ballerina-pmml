@@ -10,7 +10,7 @@ function executeModel (xml pmml, any[] data) {
     }
 
 
-    // TODO make the identification of the errors better
+    // TODO make the identification of the models better
     string modelType = getModelType(pmml);
     if (strings:contains(modelType, "GeneralRegressionModel")) {
         errors:Error err = {msg:"the model " + modelType + " is currently not supported"};
@@ -23,10 +23,21 @@ function executeModel (xml pmml, any[] data) {
     }
 }
 
-function getModelElement(xml pmml)(xml) {
+function getModelElement (xml pmml) (xml) {
     if (!isValid(pmml)) {
         throw invalidPMMLFileError();
     }
+
+    // Models Used - AssociationModel, BaselineModel, BayesianNetworkModel,
+    // ClusteringModel, GaussianProcessModel, GeneralRegressionModel, NearestNeighborModel,
+    // NaiveBayesModel, NeuralNetwork, RegressionModel, RuleSetModel, Scorecard, SequenceModel,
+    // TextModel, TimeSeriesModel, TreeModel, SupportVectorMachineModel
+    string[] models = ["AssociationModel", "BaselineModel", "BayesianNetworkModel",
+                       "ClusteringModel", "GaussianProcessModel", "GeneralRegressionModel",
+                       "NearestNeighborModel", "NaiveBayesModel", "NeuralNetwork",
+                       "RegressionModel", "RuleSetModel", "Scorecard",
+                       "SequenceModel", "TextModel", "TimeSeriesModel",
+                       "TreeModel", "SupportVectorMachineModel"];
 
     xml modelElement = null;
     int index = 0;
@@ -42,12 +53,12 @@ function getModelElement(xml pmml)(xml) {
     if (modelFound) {
         return modelElement;
     } else {
-        errors:Error err = {msg: "there is no ML model available in the pmml"};
+        errors:Error err = {msg:"there is no ML model available in the pmml"};
         throw err;
     }
 }
 
-function getModelType (xml pmml)(string) {
+function getModelType (xml pmml) (string) {
     if (!isValid(pmml)) {
         throw invalidPMMLFileError();
     }

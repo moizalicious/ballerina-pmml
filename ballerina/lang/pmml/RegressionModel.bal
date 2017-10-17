@@ -10,7 +10,6 @@ function executeRegressionModel (xml pmml, any[] data) {
         throw invalidPMMLFileError();
     }
 
-    //TODO enter regression model handling here.
     xml dataDictionaryElement = getDataDictionaryElement(pmml);
     xml modelElement = getModelElement(pmml);
     string functionName = modelElement@["functionName"];
@@ -27,7 +26,7 @@ function executeRegressionModel (xml pmml, any[] data) {
         xml miningFields = xmls:elements(xmls:children(miningSchema));
         string targetFieldName = "";
         int index = 0;
-        // TODO Identify the targetField from the mining schema
+        // Identify the target field from the mining schema.
         while (true) {
             try {
                 xml miningField = xmls:slice(miningFields, index, index + 1);
@@ -56,6 +55,7 @@ function executeRegressionModel (xml pmml, any[] data) {
                     numberOfNumericPredictors = numberOfNumericPredictors + 1;
                     index = index + 1;
                 } else {
+                    // TODO bug, thrown error gets sent to catch block.
                     throw error;
                 }
             } catch (errors:Error e) {
