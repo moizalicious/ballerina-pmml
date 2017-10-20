@@ -5,7 +5,7 @@ import ballerina.lang.xmls;
 
 function getDataFieldElements (xml pmml) (xml) {
     if (!isValid(pmml)) {
-        throw invalidPMMLFileError();
+        throw invalidPMMLElementError();
     }
 
     xml dataDictionary = getDataDictionaryElement(pmml);
@@ -15,7 +15,7 @@ function getDataFieldElements (xml pmml) (xml) {
 
 function getDataFieldElement (xml pmml, int elementNumber) (xml) {
     if (!isValid(pmml)) {
-        throw invalidPMMLFileError();
+        throw invalidPMMLElementError();
     }
 
     xml dataFieldElements = getDataFieldElements(pmml);
@@ -23,8 +23,7 @@ function getDataFieldElement (xml pmml, int elementNumber) (xml) {
     try {
         dataFieldElement = xmls:slice(xmls:elements(dataFieldElements), elementNumber, elementNumber + 1);
     } catch (errors:Error e) {
-        errors:Error err = {msg:"The data field of index " + elementNumber + " does not exist"};
-        throw err;
+        throw generateError("The data field of index " + elementNumber + " does not exist");
     }
     return dataFieldElement;
 }
@@ -38,7 +37,7 @@ function getDataFieldType (xml pmml, int elementNumber) (string) {
 
 function getNumberOfDataFields (xml pmml) (int) {
     if (!isValid(pmml)) {
-        throw invalidPMMLFileError();
+        throw invalidPMMLElementError();
     }
 
     xml dataFieldElements = xmls:elements(getDataFieldElements(pmml));

@@ -4,7 +4,7 @@ import ballerina.lang.xmls;
 
 function version (xml pmml) (float) {
     if (!isValid(pmml)) {
-        throw invalidPMMLFileError();
+        throw invalidPMMLElementError();
     }
 
     var pmmlVersion, _ = <float>pmml@["version"];

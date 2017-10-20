@@ -6,26 +6,24 @@ import ballerina.lang.xmls;
 
 function executeModel (xml pmml, any[] data) {
     if (!isValid(pmml)) {
-        throw invalidPMMLFileError();
+        throw invalidPMMLElementError();
     }
 
 
     // TODO make the identification of the models better
     string modelType = getModelType(pmml);
     if (strings:contains(modelType, "GeneralRegressionModel")) {
-        errors:Error err = {msg:"the model " + modelType + " is currently not supported"};
-        throw err;
+        throw generateError("the model " + modelType + " is currently not supported");
     } else if (strings:contains(modelType, "RegressionModel")) {
         executeRegressionModel(pmml, data);
     } else {
-        errors:Error err = {msg:"the model " + modelType + " execution is currently not supported"};
-        throw err;
+        throw generateError("the model " + modelType + " execution is currently not supported");
     }
 }
 
 function getModelElement (xml pmml) (xml) {
     if (!isValid(pmml)) {
-        throw invalidPMMLFileError();
+        throw invalidPMMLElementError();
     }
 
     // Models Used - AssociationModel, BaselineModel, BayesianNetworkModel,
@@ -53,14 +51,13 @@ function getModelElement (xml pmml) (xml) {
     if (modelFound) {
         return modelElement;
     } else {
-        errors:Error err = {msg:"there is no ML model available in the pmml"};
-        throw err;
+        throw generateError("there is no ML model available in the pmml");
     }
 }
 
 function getModelType (xml pmml) (string) {
     if (!isValid(pmml)) {
-        throw invalidPMMLFileError();
+        throw invalidPMMLElementError();
     }
 
     xml modelElement = getModelElement(pmml);
