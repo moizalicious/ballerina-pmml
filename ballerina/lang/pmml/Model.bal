@@ -1,6 +1,5 @@
 package ballerina.lang.pmml;
 
-import ballerina.lang.errors;
 import ballerina.lang.strings;
 import ballerina.lang.xmls;
 

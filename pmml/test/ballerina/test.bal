@@ -17,7 +17,7 @@ function main (string[] args) {
     system:println("Is PMML valid: " + pmml:isValid(pmml));
     system:println("Version number: " + pmml:version(pmml));
     system:println("Number of data fields: " + pmml:getNumberOfDataFields(pmml));
-    system:println("Model Type: " + pmml:getModelType(pmml));
+    system:println("Model Type: " + pmml:getModelType(pmml) + "\n");
 
     any[] data = [19, 20000, "carpark"];
     pmml:executeModel(pmml, data);
