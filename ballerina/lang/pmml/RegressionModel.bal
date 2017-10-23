@@ -66,9 +66,10 @@ function executeRegressionFunction (xml pmml, any[] data) {
             xml numericPredictorElement = xmls:slice(numericPredictorElements, index, index + 1);
 
             string name = numericPredictorElement@["name"];
+            var exponent, _ = <int>numericPredictorElement@["exponent"];
             var coefficient, _ = <float>numericPredictorElement@["coefficient"];
 
-            numericPredictors[index] = [name, coefficient];
+            numericPredictors[index] = [name, exponent, coefficient];
             index = index + 1;
         } catch (errors:Error e) {
             break;
