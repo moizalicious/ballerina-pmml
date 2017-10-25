@@ -12,13 +12,6 @@ public function getVersion (xml pmml) (float) {
 }
 
 public function isValid (xml pmml) (boolean) {
-    // Currently supported models.
-    string[] models = ["AssociationModel", "BaselineModel", "BayesianNetworkModel",
-                       "ClusteringModel", "GaussianProcessModel", "GeneralRegressionModel",
-                       "NearestNeighborModel", "NaiveBayesModel", "NeuralNetwork",
-                       "RegressionModel", "RuleSetModel", "Scorecard",
-                       "SequenceModel", "TextModel", "TimeSeriesModel",
-                       "TreeModel", "SupportVectorMachineModel"];
 
     // Get XML information.
     boolean isEmpty = xmls:isEmpty(pmml);
@@ -58,12 +51,6 @@ function hasChildElement (xml pmml, string elementName) (boolean) {
 }
 
 function hasValidModelType (xml pmml) (boolean) {
-    string[] models = ["AssociationModel", "BaselineModel", "BayesianNetworkModel",
-                       "ClusteringModel", "GaussianProcessModel", "GeneralRegressionModel",
-                       "NearestNeighborModel", "NaiveBayesModel", "NeuralNetwork",
-                       "RegressionModel", "RuleSetModel", "Scorecard",
-                       "SequenceModel", "TextModel", "TimeSeriesModel",
-                       "TreeModel", "SupportVectorMachineModel"];
 
     int index = 0;
     while (index < lengthof models) {

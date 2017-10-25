@@ -3,7 +3,7 @@ package ballerina.lang.pmml;
 import ballerina.lang.strings;
 import ballerina.lang.xmls;
 
-public function executeModel (xml pmml, any[] data) {
+public function executeModel (xml pmml, json data) {
     if (!isValid(pmml)) {
         throw invalidPMMLElementError();
     }
@@ -28,12 +28,6 @@ function getModelElement (xml pmml) (xml) {
     // ClusteringModel, GaussianProcessModel, GeneralRegressionModel, NearestNeighborModel,
     // NaiveBayesModel, NeuralNetwork, RegressionModel, RuleSetModel, Scorecard, SequenceModel,
     // TextModel, TimeSeriesModel, TreeModel, SupportVectorMachineModel
-    string[] models = ["AssociationModel", "BaselineModel", "BayesianNetworkModel",
-                       "ClusteringModel", "GaussianProcessModel", "GeneralRegressionModel",
-                       "NearestNeighborModel", "NaiveBayesModel", "NeuralNetwork",
-                       "RegressionModel", "RuleSetModel", "Scorecard",
-                       "SequenceModel", "TextModel", "TimeSeriesModel",
-                       "TreeModel", "SupportVectorMachineModel"];
 
     xml modelElement = null;
     int index = 0;

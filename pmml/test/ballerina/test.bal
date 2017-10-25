@@ -18,6 +18,10 @@ function main (string[] args) {
     system:println("Number of data fields: " + pmml:getNumberOfDataFields(pmml));
     system:println("Model Type: " + pmml:getModelType(pmml) + "\n");
 
-    any[] data = [19, 20000, "carpark"];
+    json data = {
+                    age:"20",
+                    salary:"10000",
+                    car_location:"carpark"
+                };
     pmml:executeModel(pmml, data);
 }
