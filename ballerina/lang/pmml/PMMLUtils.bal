@@ -2,7 +2,7 @@ package ballerina.lang.pmml;
 
 import ballerina.lang.xmls;
 
-function getVersion (xml pmml) (float) {
+public function getVersion (xml pmml) (float) {
     if (!isValid(pmml)) {
         throw invalidPMMLElementError();
     }
@@ -11,7 +11,7 @@ function getVersion (xml pmml) (float) {
     return pmmlVersion;
 }
 
-function isValid (xml pmml) (boolean) {
+public function isValid (xml pmml) (boolean) {
     // Currently supported models.
     string[] models = ["AssociationModel", "BaselineModel", "BayesianNetworkModel",
                        "ClusteringModel", "GaussianProcessModel", "GeneralRegressionModel",
@@ -66,7 +66,7 @@ function hasValidModelType (xml pmml) (boolean) {
                        "TreeModel", "SupportVectorMachineModel"];
 
     int index = 0;
-    while (index < models.length) {
+    while (index < lengthof models) {
         if (hasChildElement(pmml, models[index])) {
             return true;
         }

@@ -10,4 +10,3 @@ function getDataDictionaryElement (xml pmml) (xml) {
     xml dataDictionaryElement = xmls:selectChildren(pmml, "DataDictionary");
     return dataDictionaryElement;
 }
-

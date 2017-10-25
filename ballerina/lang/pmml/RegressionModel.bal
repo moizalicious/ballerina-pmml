@@ -1,7 +1,6 @@
 package ballerina.lang.pmml;
 
 import ballerina.lang.xmls;
-import ballerina.lang.errors;
 import ballerina.lang.system;
 
 function executeRegressionModel (xml pmml, any[] data) {
@@ -52,7 +51,7 @@ function executeRegressionFunction (xml pmml, any[] data) {
                 break;
             }
             index = index + 1;
-        } catch (errors:Error e) {
+        } catch (error e) {
             break;
         }
     }
@@ -71,7 +70,7 @@ function executeRegressionFunction (xml pmml, any[] data) {
 
             numericPredictors[index] = [name, exponent, coefficient];
             index = index + 1;
-        } catch (errors:Error e) {
+        } catch (error e) {
             break;
         }
     }
@@ -90,7 +89,7 @@ function executeRegressionFunction (xml pmml, any[] data) {
 
             categoricalPredictors[index] = [name, value, coefficient];
             index = index + 1;
-        } catch (errors:Error e) {
+        } catch (error e) {
             break;
         }
     }

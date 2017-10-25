@@ -7,7 +7,6 @@ import ballerina.lang.xmls;
 import ballerina.lang.pmml;
 
 function main (string[] args) {
-
     files:File file = {path:"pmml/test/res/LinearRegression.xml"};
     files:open(file, "r");
     var content, _ = files:read(file, 100000);

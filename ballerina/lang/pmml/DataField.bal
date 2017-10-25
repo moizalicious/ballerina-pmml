@@ -1,6 +1,5 @@
 package ballerina.lang.pmml;
 
-import ballerina.lang.errors;
 import ballerina.lang.xmls;
 
 function getDataFieldElements (xml pmml) (xml) {
@@ -22,7 +21,7 @@ function getDataFieldElement (xml pmml, int elementNumber) (xml) {
     xml dataFieldElement = null;
     try {
         dataFieldElement = xmls:slice(xmls:elements(dataFieldElements), elementNumber, elementNumber + 1);
-    } catch (errors:Error e) {
+    } catch (error e) {
         throw generateError("The data field of index " + elementNumber + " does not exist");
     }
     return dataFieldElement;
@@ -35,7 +34,7 @@ function getDataFieldType (xml pmml, int elementNumber) (string) {
     return optype;
 }
 
-function getNumberOfDataFields (xml pmml) (int) {
+public function getNumberOfDataFields (xml pmml) (int) {
     if (!isValid(pmml)) {
         throw invalidPMMLElementError();
     }
@@ -45,10 +44,10 @@ function getNumberOfDataFields (xml pmml) (int) {
     int numberOfDataFields = 0;
     while (true) {
         try {
-            xmls:slice(dataFieldElements, index, index + 1);
+            xml x = xmls:slice(dataFieldElements, index, index + 1);
             index = index + 1;
             numberOfDataFields = numberOfDataFields + 1;
-        } catch (errors:Error e) {
+        } catch (error e) {
             break;
         }
     }
