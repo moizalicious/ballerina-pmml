@@ -2,7 +2,7 @@ package ballerina.lang.pmml;
 
 import ballerina.lang.xmls;
 
-function version (xml pmml) (float) {
+function getVersion (xml pmml) (float) {
     if (!isValid(pmml)) {
         throw invalidPMMLElementError();
     }

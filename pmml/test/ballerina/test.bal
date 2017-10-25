@@ -15,7 +15,7 @@ function main (string[] args) {
     xml pmml = xmls:parse(s);
 
     system:println("Is PMML valid: " + pmml:isValid(pmml));
-    system:println("Version number: " + pmml:version(pmml));
+    system:println("Version number: " + pmml:getVersion(pmml));
     system:println("Number of data fields: " + pmml:getNumberOfDataFields(pmml));
     system:println("Model Type: " + pmml:getModelType(pmml) + "\n");
 
