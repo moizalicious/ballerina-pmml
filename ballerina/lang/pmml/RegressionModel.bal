@@ -107,8 +107,8 @@ function executeRegressionFunction (xml pmml, json data) {
             string predictorName = xmls:getElementName(predictorElement);
             if (strings:contains(predictorName, "NumericPredictor")) {
 
-                predictor.optype = "continuous";
                 predictor.name = predictorElement@["name"];
+                predictor.optype = "continuous";
 
                 var exponent, _ = <int>predictorElement@["exponent"];
                 predictor.exponent = exponent;
@@ -118,8 +118,9 @@ function executeRegressionFunction (xml pmml, json data) {
 
             } else if (strings:contains(predictorName, "CategoricalPredictor")) {
 
-                predictor.optype = "categorical";
                 predictor.name = predictorElement@["name"];
+                predictor.optype = "categorical";
+                // TODO find a way to add all the values as an json for each categorical data field.
                 predictor.value = predictorElement@["value"];
 
                 var coefficient, _ = <float>predictorElement@["coefficient"];
@@ -161,8 +162,8 @@ function executeRegressionFunction (xml pmml, json data) {
             dataFieldName = dataField@["name"];
             if (dataFieldName == targetFieldName) {
                 json targetJSON = {
-                                      optype:dataField@["optype"],
                                       name:dataField@["name"],
+                                      optype:dataField@["optype"],
                                       dataType:dataField@["dataType"]
                                   };
                 pmmlData.target = targetJSON;
@@ -176,26 +177,30 @@ function executeRegressionFunction (xml pmml, json data) {
     }
 
     logger:info(pmmlData);
+    logger:info(lengthof pmmlData.predictors);
 
+    xmls:Options options = {attributePrefix:"", preserveNamespaces:false};
+    json test = xmls:toJSON(pmml, options);
+    logger:info(test);
     // TODO Create the linear regression equation using the found values and return the output.
-    index = 0;
-    while (index < lengthof pmmlData.predictors) {
-        string optype = jsons:toString(pmmlData.predictors[index].optype);
-        logger:info(optype);
-        if (optype == "continuous") {
-            string name = jsons:toString(pmmlData.predictors[index].name);
-            logger:info(name);
-            var value, _ = <float>jsons:toString(data[name]);
-            logger:info(value);
-        } else if (optype == "categorical") {
-            string name = jsons:toString(pmmlData.predictors[index].name);
-            logger:info(name);
-            string value = jsons:toString(data[name]);
-            logger:info(value);
-        } else {
-            // TODO add error message here.
-        }
-        index = index + 1;
-    }
+    //index = 0;
+    //while (index < lengthof pmmlData.predictors) {
+    //    string optype = jsons:toString(pmmlData.predictors[index].optype);
+    //    logger:info(optype);
+    //    if (optype == "continuous") {
+    //        string name = jsons:toString(pmmlData.predictors[index].name);
+    //        logger:info(name);
+    //        var value, _ = <float>jsons:toString(data[name]);
+    //        logger:info(value);
+    //    } else if (optype == "categorical") {
+    //        string name = jsons:toString(pmmlData.predictors[index].name);
+    //        logger:info(name);
+    //        string value = jsons:toString(data[name]);
+    //        logger:info(value);
+    //    } else {
+    //        // TODO add error message here.
+    //    }
+    //    index = index + 1;
+    //}
 
 }
