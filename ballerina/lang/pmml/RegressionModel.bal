@@ -3,6 +3,7 @@ package ballerina.lang.pmml;
 import ballerina.lang.xmls;
 import ballerina.lang.strings;
 import ballerina.utils.logger;
+import ballerina.lang.jsons;
 
 function executeRegressionModel (xml pmml, json data) {
     // Check if the argument is a valid PMML element.
@@ -101,7 +102,6 @@ function executeRegressionFunction (xml pmml, json data) {
     index = 0;
     while (true) {
         try {
-            // TODO change the number values to float.
             xml predictorElement = xmls:slice(regressionTableChildren, index, index + 1);
             json predictor = {};
             string predictorName = xmls:getElementName(predictorElement);
@@ -178,15 +178,24 @@ function executeRegressionFunction (xml pmml, json data) {
     logger:info(pmmlData);
 
     // TODO Create the linear regression equation using the found values and return the output.
-    //index = 0;
-    //while (index < lengthof pmmlData.predictors) {
-    //    string optype = pmmlData.predictors[index].optype;
-    //    if (optype == "continuous") {
-    //    } else if (optype == "categorical") {
-    //        string name = pmmlData.predictors[index].name;
-    //    } else {
-    //        // TODO add error message here.
-    //    }
-    //}
+    index = 0;
+    while (index < lengthof pmmlData.predictors) {
+        string optype = jsons:toString(pmmlData.predictors[index].optype);
+        logger:info(optype);
+        if (optype == "continuous") {
+            string name = jsons:toString(pmmlData.predictors[index].name);
+            logger:info(name);
+            var value, _ = <float>jsons:toString(data[name]);
+            logger:info(value);
+        } else if (optype == "categorical") {
+            string name = jsons:toString(pmmlData.predictors[index].name);
+            logger:info(name);
+            string value = jsons:toString(data[name]);
+            logger:info(value);
+        } else {
+            // TODO add error message here.
+        }
+        index = index + 1;
+    }
 
 }
