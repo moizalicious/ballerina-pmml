@@ -24,11 +24,6 @@ function getModelElement (xml pmml) (xml) {
         throw invalidPMMLElementError();
     }
 
-    // Models Used - AssociationModel, BaselineModel, BayesianNetworkModel,
-    // ClusteringModel, GaussianProcessModel, GeneralRegressionModel, NearestNeighborModel,
-    // NaiveBayesModel, NeuralNetwork, RegressionModel, RuleSetModel, Scorecard, SequenceModel,
-    // TextModel, TimeSeriesModel, TreeModel, SupportVectorMachineModel
-
     xml modelElement = null;
     int index = 0;
     boolean modelFound = false;

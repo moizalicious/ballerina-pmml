@@ -19,8 +19,8 @@ function main (string[] args) {
     system:println("Model Type: " + pmml:getModelType(pmml) + "\n");
 
     json data = {
-                    age:"20",
-                    salary:"10000",
+                    age:20,
+                    salary:10000,
                     car_location:"carpark"
                 };
     pmml:executeModel(pmml, data);

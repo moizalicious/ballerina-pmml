@@ -1,8 +1,8 @@
 package ballerina.lang.pmml;
 
 import ballerina.lang.xmls;
-import ballerina.lang.system;
 import ballerina.lang.strings;
+import ballerina.utils.logger;
 
 function executeRegressionModel (xml pmml, json data) {
     // Check if the argument is a valid PMML element.
@@ -95,45 +95,98 @@ function executeRegressionFunction (xml pmml, json data) {
         }
     }
 
-    // TODO Obtain all predictor elements and add it to a JSON array.
-    index = 0;
+    // Obtain all predictor elements and add it to a JSON array.
     xml regressionTableChildren = xmls:elements(xmls:children(regressionTableElement));
-    json[] predictorElements = [];
+    json predictorElements = [];
+    index = 0;
     while (true) {
         try {
+            // TODO change the number values to float.
             xml predictorElement = xmls:slice(regressionTableChildren, index, index + 1);
             json predictor = {};
             string predictorName = xmls:getElementName(predictorElement);
             if (strings:contains(predictorName, "NumericPredictor")) {
+
                 predictor.optype = "continuous";
                 predictor.name = predictorElement@["name"];
-                predictor.exponent = predictorElement@["exponent"];
-                predictor.coefficient = predictorElement@["coefficient"];
+
+                var exponent, _ = <int>predictorElement@["exponent"];
+                predictor.exponent = exponent;
+
+                var coefficient, _ = <float>predictorElement@["coefficient"];
+                predictor.coefficient = coefficient;
+
             } else if (strings:contains(predictorName, "CategoricalPredictor")) {
+
                 predictor.optype = "categorical";
                 predictor.name = predictorElement@["name"];
                 predictor.value = predictorElement@["value"];
-                predictor.coefficient = predictorElement@["coefficient"];
+
+                var coefficient, _ = <float>predictorElement@["coefficient"];
+                predictor.coefficient = coefficient;
             }
             predictorElements[index] = predictor;
             index = index + 1;
         } catch (error e) {
+            // TODO add this condition for all the while searches of this type.
+            if (strings:contains(e.msg, "Failed to slice xml: index out of range:")) {
+                break;
+            } else {
+                logger:error(e.msg);
+            }
+        }
+    }
+
+    // Create empty JSON element to store the PMML data.
+    json pmmlData = {};
+    // Add the intercept.
+    pmmlData.intercept = intercept;
+    // Add empty predictor array
+    pmmlData.predictors = [];
+    // Add the predictorElements to the pmmlData JSON.
+    index = 0;
+    while (index < lengthof predictorElements) {
+        pmmlData.predictors[index] = predictorElements[index];
+        index = index + 1;
+    }
+
+    // Get the information of the target value and add it to the pmmlData JSON.
+    xml dataFields = getDataFieldElements(pmml);
+    xml dataField;
+    string dataFieldName;
+    index = 0;
+    while (true) {
+        try {
+            dataField = xmls:slice(dataFields, index, index + 1);
+            dataFieldName = dataField@["name"];
+            if (dataFieldName == targetFieldName) {
+                json targetJSON = {
+                                      optype:dataField@["optype"],
+                                      name:dataField@["name"],
+                                      dataType:dataField@["dataType"]
+                                  };
+                pmmlData.target = targetJSON;
+                break;
+            }
+            index = index + 1;
+        } catch (error e) {
+            logger:info(e.msg);
             break;
         }
     }
 
-    // TODO make this into a loop for getting the data and not hardcoding it.
-    system:println(predictorElements);
-    json pmmlData = {};
-    pmmlData.intercept = intercept;
-    pmmlData.predictors = [];
-    pmmlData.predictors[0] = predictorElements[0];
-    pmmlData.predictors[1] = predictorElements[1];
-    pmmlData.predictors[2] = predictorElements[2];
-    pmmlData.predictors[3] = predictorElements[3];
-    system:println(pmmlData);
-    system:println(lengthof pmmlData.predictors);
+    logger:info(pmmlData);
 
-    // TODO add all the values obtained from the PMML and add it to a JSON
     // TODO Create the linear regression equation using the found values and return the output.
+    //index = 0;
+    //while (index < lengthof pmmlData.predictors) {
+    //    string optype = pmmlData.predictors[index].optype;
+    //    if (optype == "continuous") {
+    //    } else if (optype == "categorical") {
+    //        string name = pmmlData.predictors[index].name;
+    //    } else {
+    //        // TODO add error message here.
+    //    }
+    //}
+
 }
