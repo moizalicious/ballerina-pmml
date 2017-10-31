@@ -1,4 +1,4 @@
-package ballerina.lang.pmml;
+package ballerina.pmml;
 
 string[] models = ["AssociationModel", "BaselineModel", "BayesianNetworkModel",
                    "ClusteringModel", "GaussianProcessModel", "GeneralRegressionModel",

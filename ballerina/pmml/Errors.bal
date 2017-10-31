@@ -1,4 +1,4 @@
-package ballerina.lang.pmml;
+package ballerina.pmml;
 
 function invalidPMMLElementError () (error) {
     error err = {msg:"not a valid pmml element"};

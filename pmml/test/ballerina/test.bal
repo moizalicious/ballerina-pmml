@@ -1,22 +1,22 @@
 package pmml.test.ballerina;
 
-import ballerina.lang.system;
-import ballerina.lang.files;
-import ballerina.lang.blobs;
-import ballerina.lang.xmls;
-import ballerina.lang.pmml;
+import ballerina.pmml;
+import ballerina.file;
+import ballerina.io;
 
 function main (string[] args) {
-    files:File file = {path:"pmml/test/res/LinearRegression.xml"};
-    files:open(file, "r");
-    var content, _ = files:read(file, 100000);
-    string s = blobs:toString(content, "utf-8");
-    xml pmml = xmls:parse(s);
+    file:File file = {path:"pmml/test/res/LinearRegression.xml"};
+    io:ByteChannel byteChannel = file.openChannel("r");
+    blob bytes;
+    int numberOfBytes;
+    bytes, numberOfBytes = byteChannel.readBytes(1000000);
+    string s = bytes.toString("UTF-8");
+    var pmml, _ = <xml> s;
 
-    system:println("Is PMML valid: " + pmml:isValid(pmml));
-    system:println("Version number: " + pmml:getVersion(pmml));
-    system:println("Number of data fields: " + pmml:getNumberOfDataFields(pmml));
-    system:println("Model Type: " + pmml:getModelType(pmml) + "\n");
+    println("Is PMML valid: " + pmml:isValid(pmml));
+    println("Version number: " + pmml:getVersion(pmml));
+    println("Number of data fields: " + pmml:getNumberOfDataFields(pmml));
+    println("Model Type: " + pmml:getModelType(pmml) + "\n");
 
     json data = {
                     age:20,

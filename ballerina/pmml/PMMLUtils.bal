@@ -1,6 +1,4 @@
-package ballerina.lang.pmml;
-
-import ballerina.lang.xmls;
+package ballerina.pmml;
 
 public function getVersion (xml pmml) (float) {
     if (!isValid(pmml)) {
@@ -14,10 +12,10 @@ public function getVersion (xml pmml) (float) {
 public function isValid (xml pmml) (boolean) {
 
     // Get XML information.
-    boolean isEmpty = xmls:isEmpty(pmml);
-    string itemType = xmls:getItemType(pmml);
-    boolean isSingleton = xmls:isSingleton(pmml);
-    string elementName = xmls:getElementName(pmml);
+    boolean isEmpty = pmml.isEmpty();
+    string itemType = pmml.getItemType();
+    boolean isSingleton = pmml.isSingleton();
+    string elementName = pmml.getElementName();
     //TODO find a way to read the namespace from the pmml file. This is hardcoded.
     xmlns "http://www.dmg.org/PMML-4_1" as ns1;
     xmlns "http://www.dmg.org/PMML-4_2" as ns2;
@@ -42,8 +40,8 @@ public function isValid (xml pmml) (boolean) {
 }
 
 function hasChildElement (xml pmml, string elementName) (boolean) {
-    xml element = xmls:selectChildren(pmml, elementName);
-    if (!xmls:isEmpty(element)) {
+    xml element = pmml.selectChildren(elementName);
+    if (!element.isEmpty()) {
         return true;
     } else {
         return false;

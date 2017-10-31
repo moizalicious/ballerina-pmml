@@ -1,12 +1,10 @@
-package ballerina.lang.pmml;
-
-import ballerina.lang.xmls;
+package ballerina.pmml;
 
 function getDataDictionaryElement (xml pmml) (xml) {
     if (!isValid(pmml)) {
         throw invalidPMMLElementError();
     }
 
-    xml dataDictionaryElement = xmls:selectChildren(pmml, "DataDictionary");
+    xml dataDictionaryElement = pmml.selectChildren("DataDictionary");
     return dataDictionaryElement;
 }

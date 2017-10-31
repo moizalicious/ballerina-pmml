@@ -1,7 +1,4 @@
-package ballerina.lang.pmml;
-
-import ballerina.lang.strings;
-import ballerina.lang.xmls;
+package ballerina.pmml;
 
 public function executeModel (xml pmml, json data) {
     if (!isValid(pmml)) {
@@ -10,9 +7,9 @@ public function executeModel (xml pmml, json data) {
 
     // TODO make the identification of the models better
     string modelType = getModelType(pmml);
-    if (strings:contains(modelType, "GeneralRegressionModel")) {
+    if (modelType.contains("GeneralRegressionModel")) {
         throw generateError("the model " + modelType + " is currently not supported");
-    } else if (strings:contains(modelType, "RegressionModel")) {
+    } else if (modelType.contains("RegressionModel")) {
         executeRegressionModel(pmml, data);
     } else {
         throw generateError("the model " + modelType + " execution is currently not supported");
@@ -30,7 +27,7 @@ function getModelElement (xml pmml) (xml) {
     while (index < lengthof models) {
         if (hasChildElement(pmml, models[index])) {
             modelFound = true;
-            modelElement = xmls:selectChildren(pmml, models[index]);
+            modelElement = pmml.selectChildren(models[index]);
             break;
         }
         index = index + 1;
@@ -47,6 +44,6 @@ public function getModelType (xml pmml) (string) {
     }
 
     xml modelElement = getModelElement(pmml);
-    string modelType = xmls:getElementName(modelElement);
+    string modelType = modelElement.getElementName();
     return modelType;
 }
