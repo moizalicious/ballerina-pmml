@@ -58,35 +58,31 @@ function executeRegressionFunction (xml pmml, json data) {
     }
 
 
-
-    // TODO Obtain all the predictor elements from the DataFields and add it to the JSON.
+    // Obtain all the predictor elements from the DataFields and add it to the JSON.
     json dataFieldsJSON = [];
     index = 0;
-    while (index < numberOfFields) {
-        xml field = getDataFieldElement(pmml, index);
-        if (field@["name"] != targetFieldName) {
-            json fieldJSON = {};
-            fieldJSON.name = field@["name"];
-            fieldJSON.optype = field@["optype"];
-            fieldJSON.dataType = field@["dataType"];
-            if (field@["optype"] == "categorical") {
-                fieldJSON.value = {};
-                xml values = field.selectChildren("Value");
-                int c = 0;
-                while (true) {
-                    try {
-                        xml value = values.slice(c, c + 1);
-                        var s, _ = <string>c;
-                        fieldJSON["values"][s] = value@["value"];
-                    } catch (error e) {
-                        break;
-                    }
-                    c = c + 1;
+    xml dataFieldElementsWithoutTarget = getDataFieldElementsWithoutTarget(pmml, targetFieldName).elements();
+    while (true) {
+        try {
+            xml field = dataFieldElementsWithoutTarget.slice(index, index + 1);
+            if (field@["name"] != targetFieldName) {
+                json fieldJSON = {};
+                fieldJSON.name = field@["name"];
+                fieldJSON.optype = field@["optype"];
+                fieldJSON.dataType = field@["dataType"];
+                if (field@["optype"] == "categorical") {
+                    fieldJSON.value = {};
                 }
+                dataFieldsJSON[index] = fieldJSON;
             }
-            dataFieldsJSON[index] = fieldJSON;
+            index = index + 1;
+        } catch (error e) {
+            if (e.msg.contains("Failed to slice xml: index out of range:")) {
+                break;
+            } else {
+                throw e;
+            }
         }
-        index = index + 1;
     }
 
     // Obtain all predictor elements and add it to a JSON array.
@@ -113,7 +109,6 @@ function executeRegressionFunction (xml pmml, json data) {
 
                 predictor.name = predictorElement@["name"];
                 predictor.optype = "categorical";
-                // TODO find a way to add all the values as an json for each categorical data field.
                 predictor.value = predictorElement@["value"];
 
                 var coefficient, _ = <float>predictorElement@["coefficient"];
@@ -131,7 +126,7 @@ function executeRegressionFunction (xml pmml, json data) {
         }
     }
 
-    // TODO add a loop inside a loop to merge the predictorElements and the dataFields together.
+    // Add a loop inside a loop to merge the predictorElements and the dataFields together.
     index = 0;
     while (index < (lengthof dataFieldsJSON)) {
         int count = 0;
@@ -150,23 +145,21 @@ function executeRegressionFunction (xml pmml, json data) {
         }
         index = index + 1;
     }
-    //log:info(predictorElements);
-    //log:info(dataFieldsJSON);
 
     // Create empty JSON element to store the PMML data.
-    json pmmlData = {};
+    json regressionModelJSON = {};
     // Add the intercept.
-    pmmlData.intercept = intercept;
+    regressionModelJSON.intercept = intercept;
     // Add empty predictor array
-    pmmlData.predictors = dataFieldsJSON;
-    // Add the predictorElements to the pmmlData JSON.
+    regressionModelJSON.predictors = dataFieldsJSON;
+    // Add the predictorElements to the regressionModelJSON JSON.
     //index = 0;
     //while (index < lengthof predictorElements) {
-    //    pmmlData.predictors[index] = predictorElements[index];
+    //    regressionModelJSON.predictors[index] = predictorElements[index];
     //    index = index + 1;
     //}
 
-    // Get the information of the target value and add it to the pmmlData JSON. // TODO can merge with other code.
+    // Get the information of the target value and add it to the regressionModelJSON JSON. // TODO can merge with other code.
     xml dataFields = getDataFieldElements(pmml);
     xml dataField;
     string dataFieldName;
@@ -181,7 +174,7 @@ function executeRegressionFunction (xml pmml, json data) {
                                       optype:dataField@["optype"],
                                       dataType:dataField@["dataType"]
                                   };
-                pmmlData.target = targetJSON;
+                regressionModelJSON.target = targetJSON;
                 break;
             }
             index = index + 1;
@@ -191,26 +184,10 @@ function executeRegressionFunction (xml pmml, json data) {
         }
     }
 
-    log:info(pmmlData);
-    //logger:info(lengthof pmmlData.predictors);
+    log:info(regressionModelJSON);
+
+
     // TODO Create the linear regression equation using the found values and return the output.
-    //index = 0;
-    //while (index < lengthof pmmlData.predictors) {
-    //    string optype = jsons:toString(pmmlData.predictors[index].optype);
-    //    logger:info(optype);
-    //    if (optype == "continuous") {
-    //        string name = jsons:toString(pmmlData.predictors[index].name);
-    //        logger:info(name);
-    //        var value, _ = <float>jsons:toString(data[name]);
-    //        logger:info(value);
-    //    } else if (optype == "categorical") {
-    //        string name = jsons:toString(pmmlData.predictors[index].name);
-    //        logger:info(name);
-    //        string value = jsons:toString(data[name]);
-    //        logger:info(value);
-    //    } else {
-    //        // TODO add error message here.
-    //    }
-    //    index = index + 1;
-    //}
+    
+
 }

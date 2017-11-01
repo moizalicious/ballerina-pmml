@@ -1,5 +1,7 @@
 package ballerina.pmml;
 
+import ballerina.log;
+
 function getDataFieldElements (xml pmml) (xml) {
     if (!isValid(pmml)) {
         throw invalidPMMLElementError();
@@ -32,7 +34,7 @@ function getDataFieldType (xml pmml, int elementNumber) (string) {
     return optype;
 }
 
-function getDataFieldName(xml dataFieldElement) {
+function getDataFieldName (xml dataFieldElement) {
     // TODO complete
 }
 
@@ -41,8 +43,9 @@ public function getNumberOfDataFields (xml pmml) (int) {
         throw invalidPMMLElementError();
     }
 
+    // TODO the `.elements()` part should be in getDataFieldElements() function.
     xml dataFieldElements = getDataFieldElements(pmml).elements();
-    int index = 0;
+    index = 0;
     int numberOfDataFields = 0;
     while (true) {
         try {
@@ -54,4 +57,31 @@ public function getNumberOfDataFields (xml pmml) (int) {
         }
     }
     return numberOfDataFields;
+}
+
+function getDataFieldElementsWithoutTarget (xml pmml, string targetName) (xml) {
+    // TODO complete
+    int index = 0;
+    xml dataFields = getDataFieldElements(pmml).elements();
+    xml dataFieldsWithoutTarget;
+    while (true) {
+        try {
+            xml dataField = dataFields.slice(index, index + 1);
+            if (dataField@["name"] != targetName) {
+                if (index == 0) {
+                    dataFieldsWithoutTarget = dataField;
+                } else {
+                    dataFieldsWithoutTarget = dataFieldsWithoutTarget + dataField;
+                }
+            }
+        } catch (error e) {
+            if (e.msg.contains("Failed to slice xml: index out of range:")) {
+                break;
+            } else {
+                throw e;
+            }
+        }
+        index = index + 1;
+    }
+    return dataFieldsWithoutTarget;
 }
