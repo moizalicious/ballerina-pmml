@@ -2,7 +2,7 @@ package ballerina.pmml;
 
 import ballerina.log;
 
-public function executeRegressionModel (xml pmml, json data) {
+public function executeRegressionModel (xml pmml, xml data) {
     // TODO change the input or json data as a xml data (then convert it to json).
     // Check if the argument is a valid PMML element.
     if (!isValid(pmml)) {
@@ -16,7 +16,7 @@ public function executeRegressionModel (xml pmml, json data) {
     }
 }
 
-function executeRegressionFunction (xml pmml, json data) {
+function executeRegressionFunction (xml pmml, xml data) {
     // TODO rearrange all of this.
     // Get the data dictionary element.
     xml dataDictionaryElement = getDataDictionaryElement(pmml);
@@ -183,11 +183,48 @@ function executeRegressionFunction (xml pmml, json data) {
             break;
         }
     }
-
     log:info(regressionModelJSON);
+
+    // Convert the xml `data` variable to JSON to calculate the output.
+    xmlOptions options = {};
+    json dataJSON = data.children().elements().toJSON(options);
+    log:info(dataJSON);
 
 
     // TODO Create the linear regression equation using the found values and return the output.
-    
+    var output = calculateOutput(regressionModelJSON, dataJSON);
+    log:info(output);
 
+
+}
+
+function calculateOutput (json model, json data) (any) {
+    var output, _ = <float>model.intercept.toString();
+    int numberOfPredictors = lengthof model.predictors;
+    int index = 0;
+    while (index < numberOfPredictors) {
+        string name = model.predictors[index].name.toString();
+        string opType = model.predictors[index].optype.toString();
+        string valueStr = data[name].toString();
+        var coefficient = 0.0;
+        var value = 0.0;
+        if (opType == "continuous") {
+            coefficient, _ = <float>model.predictors[index].coefficient.toString();
+            value, _ = <float>valueStr;
+        } else if (opType == "categorical") {
+            coefficient, _ = <float>model.predictors[index].value[valueStr].toString();
+            value = 1;
+        }
+        output = output + (coefficient * value);
+
+        index = index + 1;
+    }
+
+    // TODO there may be other variations to this.
+    string targetFieldDataType = model.target.dataType.toString();
+    if(targetFieldDataType == "integer") {
+        output, _ = <int>output;
+    }
+
+    return output;
 }

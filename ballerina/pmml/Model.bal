@@ -1,6 +1,6 @@
 package ballerina.pmml;
 
-public function executeModel (xml pmml, json data) {
+public function executeModel (xml pmml, xml data) {
     if (!isValid(pmml)) {
         throw invalidPMMLElementError();
     }

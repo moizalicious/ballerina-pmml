@@ -1,14 +1,12 @@
 package ballerina.pmml;
 
-import ballerina.log;
-
 function getDataFieldElements (xml pmml) (xml) {
     if (!isValid(pmml)) {
         throw invalidPMMLElementError();
     }
 
     xml dataDictionary = getDataDictionaryElement(pmml);
-    xml dataFields = dataDictionary.children();
+    xml dataFields = dataDictionary.children().elements();
     return dataFields;
 }
 
@@ -44,7 +42,7 @@ public function getNumberOfDataFields (xml pmml) (int) {
     }
 
     // TODO the `.elements()` part should be in getDataFieldElements() function.
-    xml dataFieldElements = getDataFieldElements(pmml).elements();
+    xml dataFieldElements = getDataFieldElements(pmml);
     index = 0;
     int numberOfDataFields = 0;
     while (true) {
