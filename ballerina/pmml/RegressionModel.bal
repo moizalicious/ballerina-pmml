@@ -2,7 +2,9 @@ package ballerina.pmml;
 
 import ballerina.log;
 
-public function executeRegressionModel (xml pmml, xml data) {
+public function executeRegressionModel (xml pmml, xml data) (float) {
+    float result;
+    // TODO get rid of the global variables.
     // TODO change the input or json data as a xml data (then convert it to json).
     // Check if the argument is a valid PMML element.
     if (!isValid(pmml)) {
@@ -12,11 +14,12 @@ public function executeRegressionModel (xml pmml, xml data) {
     xml modelElement = getModelElement(pmml);
     string functionName = modelElement@["functionName"];
     if (functionName == "regression") {
-        executeRegressionFunction(pmml, data);
+        result = executeRegressionFunction(pmml, data);
     }
+    return result;
 }
 
-function executeRegressionFunction (xml pmml, xml data) {
+function executeRegressionFunction (xml pmml, xml data) (float) {
     // TODO rearrange all of this.
     // Get the data dictionary element.
     xml dataDictionaryElement = getDataDictionaryElement(pmml);
@@ -39,111 +42,87 @@ function executeRegressionFunction (xml pmml, xml data) {
     // Get all the <MiningField> elements from the mining schema.
     xml miningFields = miningSchema.children().elements();
 
-    // Index is used for the while loops
-    index = 0;
-
     // Identify the target field from the mining schema.
     string targetFieldName;
-    while (true) {
-        try {
-            xml miningField = miningFields.slice(index, index + 1);
-            if (miningField@["usageType"] == "target") {
-                targetFieldName = miningField@["name"];
-                break;
-            }
-            index = index + 1;
-        } catch (error e) {
+    int i = 0;
+    while (i < lengthof miningFields) {
+        xml miningField = miningFields[i];
+        if (miningField@["usageType"] == "target") {
+            targetFieldName = miningField@["name"];
             break;
         }
+        i = i + 1;
     }
-
 
     // Obtain all the predictor elements from the DataFields and add it to the JSON.
     json dataFieldsJSON = [];
-    index = 0;
-    xml dataFieldElementsWithoutTarget = getDataFieldElementsWithoutTarget(pmml, targetFieldName).elements();
-    while (true) {
-        try {
-            xml field = dataFieldElementsWithoutTarget.slice(index, index + 1);
-            if (field@["name"] != targetFieldName) {
-                json fieldJSON = {};
-                fieldJSON.name = field@["name"];
-                fieldJSON.optype = field@["optype"];
-                fieldJSON.dataType = field@["dataType"];
-                if (field@["optype"] == "categorical") {
-                    fieldJSON.value = {};
-                }
-                dataFieldsJSON[index] = fieldJSON;
+    i = 0;
+    xml dataFieldElementsWithoutTarget = getDataFieldElementsWithoutTarget(dataDictionaryElement, targetFieldName).elements();
+    while (i < lengthof dataFieldElementsWithoutTarget) {
+        xml field = dataFieldElementsWithoutTarget[i];
+        if (field@["name"] != targetFieldName) {
+            json fieldJSON = {};
+            fieldJSON.name = field@["name"];
+            fieldJSON.optype = field@["optype"];
+            fieldJSON.dataType = field@["dataType"];
+            if (field@["optype"] == "categorical") {
+                fieldJSON.value = {};
             }
-            index = index + 1;
-        } catch (error e) {
-            if (e.msg.contains("Failed to slice xml: index out of range:")) {
-                break;
-            } else {
-                throw e;
-            }
+            dataFieldsJSON[i] = fieldJSON;
         }
+        i = i + 1;
     }
 
     // Obtain all predictor elements and add it to a JSON array.
     xml regressionTableChildren = regressionTableElement.children().elements();
     json predictorElements = [];
-    index = 0;
-    while (true) {
-        try {
-            xml predictorElement = regressionTableChildren.slice(index, index + 1);
-            json predictor = {};
-            string predictorName = predictorElement.getElementName();
-            if (predictorName.contains("NumericPredictor")) {
+    i = 0;
+    while (i < lengthof regressionTableChildren) {
+        xml predictorElement = regressionTableChildren[i];
+        json predictor = {};
+        string predictorName = predictorElement.getElementName();
+        if (predictorName.contains("NumericPredictor")) {
 
-                predictor.name = predictorElement@["name"];
-                predictor.optype = "continuous";
+            predictor.name = predictorElement@["name"];
+            predictor.optype = "continuous";
 
-                var exponent, _ = <int>predictorElement@["exponent"];
-                predictor.exponent = exponent;
+            var exponent, _ = <int>predictorElement@["exponent"];
+            predictor.exponent = exponent;
 
-                var coefficient, _ = <float>predictorElement@["coefficient"];
-                predictor.coefficient = coefficient;
+            var coefficient, _ = <float>predictorElement@["coefficient"];
+            predictor.coefficient = coefficient;
 
-            } else if (predictorName.contains("CategoricalPredictor")) {
+        } else if (predictorName.contains("CategoricalPredictor")) {
 
-                predictor.name = predictorElement@["name"];
-                predictor.optype = "categorical";
-                predictor.value = predictorElement@["value"];
+            predictor.name = predictorElement@["name"];
+            predictor.optype = "categorical";
+            predictor.value = predictorElement@["value"];
 
-                var coefficient, _ = <float>predictorElement@["coefficient"];
-                predictor.coefficient = coefficient;
-            }
-            predictorElements[index] = predictor;
-            index = index + 1;
-        } catch (error e) {
-            // TODO add this condition for all the while searches of this type.
-            if (e.msg.contains("Failed to slice xml: index out of range:")) {
-                break;
-            } else {
-                log:error(e.msg);
-            }
+            var coefficient, _ = <float>predictorElement@["coefficient"];
+            predictor.coefficient = coefficient;
         }
+        predictorElements[i] = predictor;
+        i = i + 1;
     }
 
     // Add a loop inside a loop to merge the predictorElements and the dataFields together.
-    index = 0;
-    while (index < (lengthof dataFieldsJSON)) {
+    i = 0;
+    while (i < lengthof dataFieldsJSON) {
         int count = 0;
         while (count < (lengthof predictorElements)) {
-            if (dataFieldsJSON[index].name.toString() == predictorElements[count].name.toString()) {
-                string optypeStr = dataFieldsJSON[index].optype.toString();
+            if (dataFieldsJSON[i].name.toString() == predictorElements[count].name.toString()) {
+                string optypeStr = dataFieldsJSON[i].optype.toString();
                 if (optypeStr == "continuous") {
-                    dataFieldsJSON[index].exponent = predictorElements[count].exponent;
-                    dataFieldsJSON[index].coefficient = predictorElements[count].coefficient;
+                    dataFieldsJSON[i].exponent = predictorElements[count].exponent;
+                    dataFieldsJSON[i].coefficient = predictorElements[count].coefficient;
                 } else if (optypeStr == "categorical") {
                     string value = predictorElements[count].value.toString();
-                    dataFieldsJSON[index].value[value] = predictorElements[count].coefficient;
+                    dataFieldsJSON[i].value[value] = predictorElements[count].coefficient;
                 }
             }
             count = count + 1;
         }
-        index = index + 1;
+        i = i + 1;
     }
 
     // Create empty JSON element to store the PMML data.
@@ -153,78 +132,68 @@ function executeRegressionFunction (xml pmml, xml data) {
     // Add empty predictor array
     regressionModelJSON.predictors = dataFieldsJSON;
     // Add the predictorElements to the regressionModelJSON JSON.
-    //index = 0;
-    //while (index < lengthof predictorElements) {
-    //    regressionModelJSON.predictors[index] = predictorElements[index];
-    //    index = index + 1;
+    //i = 0;
+    //while (i < lengthof predictorElements) {
+    //    regressionModelJSON.predictors[i] = predictorElements[i];
+    //    i = i + 1;
     //}
 
     // Get the information of the target value and add it to the regressionModelJSON JSON. // TODO can merge with other code.
-    xml dataFields = getDataFieldElements(pmml);
+    xml dataFields = getDataFieldElements(dataDictionaryElement);
     xml dataField;
     string dataFieldName;
-    index = 0;
-    while (true) {
-        try {
-            dataField = dataFields.slice(index, index + 1);
-            dataFieldName = dataField@["name"];
-            if (dataFieldName == targetFieldName) {
-                json targetJSON = {
-                                      name:dataField@["name"],
-                                      optype:dataField@["optype"],
-                                      dataType:dataField@["dataType"]
-                                  };
-                regressionModelJSON.target = targetJSON;
-                break;
-            }
-            index = index + 1;
-        } catch (error e) {
-            log:info(e.msg);
+    i = 0;
+    while (i < lengthof dataFields) {
+        dataField = dataFields[i];
+        dataFieldName = dataField@["name"];
+        if (dataFieldName == targetFieldName) {
+            json targetJSON = {
+                                  name:dataField@["name"],
+                                  optype:dataField@["optype"],
+                                  dataType:dataField@["dataType"]
+                              };
+            regressionModelJSON.target = targetJSON;
             break;
         }
+        i = i + 1;
     }
-    log:info(regressionModelJSON);
 
     // Convert the xml `data` variable to JSON to calculate the output.
     xmlOptions options = {};
     json dataJSON = data.children().elements().toJSON(options);
-    log:info(dataJSON);
-
 
     // TODO Create the linear regression equation using the found values and return the output.
-    var output = calculateOutput(regressionModelJSON, dataJSON);
-    log:info(output);
-
-
+    float output = calculateOutput(regressionModelJSON, dataJSON);
+    return output;
 }
 
-function calculateOutput (json model, json data) (any) {
+function calculateOutput (json model, json data) (float) {
     var output, _ = <float>model.intercept.toString();
     int numberOfPredictors = lengthof model.predictors;
-    int index = 0;
-    while (index < numberOfPredictors) {
-        string name = model.predictors[index].name.toString();
-        string opType = model.predictors[index].optype.toString();
+    int i = 0;
+    while (i < numberOfPredictors) {
+        string name = model.predictors[i].name.toString();
+        string opType = model.predictors[i].optype.toString();
         string valueStr = data[name].toString();
         var coefficient = 0.0;
         var value = 0.0;
         if (opType == "continuous") {
-            coefficient, _ = <float>model.predictors[index].coefficient.toString();
+            coefficient, _ = <float>model.predictors[i].coefficient.toString();
             value, _ = <float>valueStr;
         } else if (opType == "categorical") {
-            coefficient, _ = <float>model.predictors[index].value[valueStr].toString();
+            coefficient, _ = <float>model.predictors[i].value[valueStr].toString();
             value = 1;
         }
         output = output + (coefficient * value);
 
-        index = index + 1;
+        i = i + 1;
     }
 
     // TODO there may be other variations to this.
     string targetFieldDataType = model.target.dataType.toString();
-    if(targetFieldDataType == "integer") {
-        output, _ = <int>output;
+    if (targetFieldDataType == "integer") {
+        return <int>output;
+    } else {
+        return output;
     }
-
-    return output;
 }

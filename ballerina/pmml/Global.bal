@@ -6,5 +6,3 @@ string[] models = ["AssociationModel", "BaselineModel", "BayesianNetworkModel",
                    "RegressionModel", "RuleSetModel", "Scorecard",
                    "SequenceModel", "TextModel", "TimeSeriesModel",
                    "TreeModel", "SupportVectorMachineModel"];
-
-int index = 0;

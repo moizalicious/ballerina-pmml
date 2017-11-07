@@ -1,85 +1,36 @@
 package ballerina.pmml;
 
-function getDataFieldElements (xml pmml) (xml) {
-    if (!isValid(pmml)) {
-        throw invalidPMMLElementError();
-    }
-
-    xml dataDictionary = getDataDictionaryElement(pmml);
-    xml dataFields = dataDictionary.children().elements();
+function getDataFieldElements (xml dataDictionary) (xml) {
+    xml dataFields = dataDictionary.children().elements().strip();
     return dataFields;
 }
 
-function getDataFieldElement (xml pmml, int elementNumber) (xml) {
-    if (!isValid(pmml)) {
-        throw invalidPMMLElementError();
-    }
-
-    xml dataFieldElements = getDataFieldElements(pmml);
-    xml dataFieldElement = null;
-    try {
-        dataFieldElement = dataFieldElements.elements().slice(elementNumber, elementNumber + 1);
-    } catch (error e) {
-        throw generateError("The data field of index " + elementNumber + " does not exist");
-    }
-    return dataFieldElement;
+function getDataFieldElement (xml dataDictionary, int elementNumber) (xml) {
+    xml dataFieldElements = getDataFieldElements(dataDictionary);
+    return dataFieldElements[elementNumber];
 }
 
-
-function getDataFieldType (xml pmml, int elementNumber) (string) {
-    xml dataFieldElement = getDataFieldElement(pmml, elementNumber);
-    string optype = dataFieldElement@["optype"];
-    return optype;
-}
-
-function getDataFieldName (xml dataFieldElement) {
-    // TODO complete
-}
-
-public function getNumberOfDataFields (xml pmml) (int) {
-    if (!isValid(pmml)) {
-        throw invalidPMMLElementError();
-    }
-
+function getNumberOfDataFields (xml dataDictionary) (int) {
     // TODO the `.elements()` part should be in getDataFieldElements() function.
-    xml dataFieldElements = getDataFieldElements(pmml);
-    index = 0;
-    int numberOfDataFields = 0;
-    while (true) {
-        try {
-            xml x = dataFieldElements.slice(index, index + 1);
-            index = index + 1;
-            numberOfDataFields = numberOfDataFields + 1;
-        } catch (error e) {
-            break;
-        }
-    }
-    return numberOfDataFields;
+    xml dataFields = getDataFieldElements(dataDictionary);
+    return lengthof dataFields;
 }
 
-function getDataFieldElementsWithoutTarget (xml pmml, string targetName) (xml) {
+function getDataFieldElementsWithoutTarget (xml dataDictionary, string targetName) (xml) {
     // TODO complete
-    int index = 0;
-    xml dataFields = getDataFieldElements(pmml).elements();
+    int i = 0;
+    xml dataFields = getDataFieldElements(dataDictionary).elements();
     xml dataFieldsWithoutTarget;
-    while (true) {
-        try {
-            xml dataField = dataFields.slice(index, index + 1);
-            if (dataField@["name"] != targetName) {
-                if (index == 0) {
-                    dataFieldsWithoutTarget = dataField;
-                } else {
-                    dataFieldsWithoutTarget = dataFieldsWithoutTarget + dataField;
-                }
-            }
-        } catch (error e) {
-            if (e.msg.contains("Failed to slice xml: index out of range:")) {
-                break;
+    while (i < lengthof dataFields) {
+        xml dataField = dataFields[i];
+        if (dataField@["name"] != targetName) {
+            if (i == 0) {
+                dataFieldsWithoutTarget = dataField;
             } else {
-                throw e;
+                dataFieldsWithoutTarget = dataFieldsWithoutTarget + dataField;
             }
         }
-        index = index + 1;
+        i = i + 1;
     }
     return dataFieldsWithoutTarget;
 }

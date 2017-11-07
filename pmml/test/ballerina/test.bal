@@ -17,8 +17,9 @@ function main (string[] args) {
     // Test public functions of the API.
     println("Is PMML valid: " + pmml:isValid(pmml));
     println("Version number: " + pmml:getVersion(pmml));
-    println("Number of data fields: " + pmml:getNumberOfDataFields(pmml));
     println("Model Type: " + pmml:getModelType(pmml) + "\n");
+
+    // TODO iterator is available in ballerina XML, replace them with the while loops.
 
     // TODO make sure the input has a root element `<data>` for the input. Name could change accordingly.
     // Execute the linear regression model.
@@ -27,5 +28,17 @@ function main (string[] args) {
                         <salary>10000</salary>
                         <car_location>carpark</car_location>
                     </data>`;
-    pmml:executeModel(pmml, data);
+    println("Predicted Result Is: " + pmml:executeModel(pmml, data));
+
+
+
+
+
+
+
+
+
+
+
+
 }
