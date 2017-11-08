@@ -4,8 +4,6 @@ import ballerina.log;
 
 public function executeRegressionModel (xml pmml, xml data) (float) {
     float result;
-    // TODO get rid of the global variables.
-    // TODO change the input or json data as a xml data (then convert it to json).
     // Check if the argument is a valid PMML element.
     if (!isValid(pmml)) {
         throw invalidPMMLElementError();
@@ -20,29 +18,11 @@ public function executeRegressionModel (xml pmml, xml data) (float) {
 }
 
 function executeRegressionFunction (xml pmml, xml data) (float) {
-    // TODO rearrange all of this.
-    // Get the data dictionary element.
-    xml dataDictionaryElement = getDataDictionaryElement(pmml);
-
-    // Get the model element.
+    // Get the <RegressionModel> element from the pmml.
     xml modelElement = getModelElement(pmml);
-
-    // Get the number of data fields in the PMML.
-    int numberOfFields = getNumberOfDataFields(pmml);
-
-    // Obtain the <RegressionTable> element from the PMML.
-    xml regressionTableElement = modelElement.selectChildren("RegressionTable");
-
-    // Obtain the intercept value of the linear regression.
-    var intercept, _ = <float>regressionTableElement@["intercept"];
-
-    // Get the <MiningSchema> element.
+    // Identify the target field using the <MiningSchema>.
     xml miningSchema = modelElement.selectChildren("MiningSchema");
-
-    // Get all the <MiningField> elements from the mining schema.
     xml miningFields = miningSchema.children().elements();
-
-    // Identify the target field from the mining schema.
     string targetFieldName;
     int i = 0;
     while (i < lengthof miningFields) {
@@ -54,7 +34,8 @@ function executeRegressionFunction (xml pmml, xml data) (float) {
         i = i + 1;
     }
 
-    // Obtain all the predictor elements from the DataFields and add it to the JSON.
+    // Obtain all the <DataField> elements from the <DataDictionary> as a JSON.
+    xml dataDictionaryElement = getDataDictionaryElement(pmml);
     json dataFieldsJSON = [];
     i = 0;
     xml dataFieldElementsWithoutTarget = getDataFieldElementsWithoutTarget(dataDictionaryElement, targetFieldName).elements();
@@ -73,9 +54,11 @@ function executeRegressionFunction (xml pmml, xml data) (float) {
         i = i + 1;
     }
 
-    // Obtain all predictor elements and add it to a JSON array.
+    // Obtain the <RegressionTable> element from the <RegressionModel> element.
+    xml regressionTableElement = modelElement.selectChildren("RegressionTable");
+    // Obtain child elements from the <RegressionTable> element as a JSON array.
     xml regressionTableChildren = regressionTableElement.children().elements();
-    json predictorElements = [];
+    json predictorElementsJSON = [];
     i = 0;
     while (i < lengthof regressionTableChildren) {
         xml predictorElement = regressionTableChildren[i];
@@ -100,24 +83,26 @@ function executeRegressionFunction (xml pmml, xml data) (float) {
 
             var coefficient, _ = <float>predictorElement@["coefficient"];
             predictor.coefficient = coefficient;
+        } else {
+            throw generateError("no numeric/categorical predictor element found in the " + getModelType(pmml) + "element");
         }
-        predictorElements[i] = predictor;
+        predictorElementsJSON[i] = predictor;
         i = i + 1;
     }
 
-    // Add a loop inside a loop to merge the predictorElements and the dataFields together.
+    // Add the information stored in the `predictorElementsJSON` variable to the `dataFieldsJSON` variable.
     i = 0;
     while (i < lengthof dataFieldsJSON) {
         int count = 0;
-        while (count < (lengthof predictorElements)) {
-            if (dataFieldsJSON[i].name.toString() == predictorElements[count].name.toString()) {
+        while (count < (lengthof predictorElementsJSON)) {
+            if (dataFieldsJSON[i].name.toString() == predictorElementsJSON[count].name.toString()) {
                 string optypeStr = dataFieldsJSON[i].optype.toString();
                 if (optypeStr == "continuous") {
-                    dataFieldsJSON[i].exponent = predictorElements[count].exponent;
-                    dataFieldsJSON[i].coefficient = predictorElements[count].coefficient;
+                    dataFieldsJSON[i].exponent = predictorElementsJSON[count].exponent;
+                    dataFieldsJSON[i].coefficient = predictorElementsJSON[count].coefficient;
                 } else if (optypeStr == "categorical") {
-                    string value = predictorElements[count].value.toString();
-                    dataFieldsJSON[i].value[value] = predictorElements[count].coefficient;
+                    string value = predictorElementsJSON[count].value.toString();
+                    dataFieldsJSON[i].value[value] = predictorElementsJSON[count].coefficient;
                 }
             }
             count = count + 1;
@@ -125,20 +110,17 @@ function executeRegressionFunction (xml pmml, xml data) (float) {
         i = i + 1;
     }
 
-    // Create empty JSON element to store the PMML data.
-    json regressionModelJSON = {};
-    // Add the intercept.
-    regressionModelJSON.intercept = intercept;
-    // Add empty predictor array
-    regressionModelJSON.predictors = dataFieldsJSON;
-    // Add the predictorElements to the regressionModelJSON JSON.
-    //i = 0;
-    //while (i < lengthof predictorElements) {
-    //    regressionModelJSON.predictors[i] = predictorElements[i];
-    //    i = i + 1;
-    //}
 
-    // Get the information of the target value and add it to the regressionModelJSON JSON. // TODO can merge with other code.
+    // Obtain the intercept value of the linear regression model.
+    var intercept, _ = <float>regressionTableElement@["intercept"];
+    // Create empty JSON element to store the PMML data of the entire <PMML> element.
+    json regressionModelJSON = {};
+    // Add the intercept to the regressionModelJSON variable.
+    regressionModelJSON.intercept = intercept;
+    // Add `dataFieldsJSON` to the `regressionModelJSON` variable.
+    regressionModelJSON.predictors = dataFieldsJSON;
+
+    // Get the information of the target value and add it to the regressionModelJSON JSON.
     xml dataFields = getDataFieldElements(dataDictionaryElement);
     xml dataField;
     string dataFieldName;
@@ -162,12 +144,17 @@ function executeRegressionFunction (xml pmml, xml data) (float) {
     xmlOptions options = {};
     json dataJSON = data.children().elements().toJSON(options);
 
-    // TODO Create the linear regression equation using the found values and return the output.
+
+    log:printInfo(regressionModelJSON.toString());
+    log:printInfo(dataJSON.toString());
     float output = calculateOutput(regressionModelJSON, dataJSON);
     return output;
 }
 
+
 function calculateOutput (json model, json data) (float) {
+    // TODO make the exponents count
+    // TODO add functionality for PMML 4.2, & 4.3.
     var output, _ = <float>model.intercept.toString();
     int numberOfPredictors = lengthof model.predictors;
     int i = 0;
@@ -188,8 +175,6 @@ function calculateOutput (json model, json data) (float) {
 
         i = i + 1;
     }
-
-    // TODO there may be other variations to this.
     string targetFieldDataType = model.target.dataType.toString();
     if (targetFieldDataType == "integer") {
         return <int>output;

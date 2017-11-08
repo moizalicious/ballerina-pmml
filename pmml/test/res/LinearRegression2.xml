@@ -1,0 +1,34 @@
+<PMML version="4.2" xmlns="http://www.dmg.org/PMML-4_2">
+    <Header copyright="DMG">
+        <Application name="KNIME" version="2.6.2"/>
+    </Header>
+    <DataDictionary numberOfFields="7">
+        <DataField name="latitude" optype="continuous" dataType="double"/>
+        <DataField name="longitude" optype="continuous" dataType="double"/>
+        <DataField name="zon_winds" optype="continuous" dataType="double"/>
+        <DataField name="mer_winds" optype="continuous" dataType="double"/>
+        <DataField name="humidity" optype="continuous" dataType="double"/>
+        <DataField name="airtemp" optype="continuous" dataType="double"/>
+        <DataField name="s_s_temp" optype="continuous" dataType="double"/>
+    </DataDictionary>
+    <RegressionModel functionName="regression" algorithmName="LinearRegression" modelName="KNIME Linear Regression"
+                     targetFieldName="airtemp">
+        <MiningSchema>
+            <MiningField name="latitude"/>
+            <MiningField name="longitude"/>
+            <MiningField name="zon_winds"/>
+            <MiningField name="mer_winds"/>
+            <MiningField name="humidity"/>
+            <MiningField name="s_s_temp"/>
+            <MiningField name="airtemp" usageType="target"/>
+        </MiningSchema>
+        <RegressionTable intercept="6.008706171265235">
+            <NumericPredictor name="latitude" coefficient="3.363167396766842E-4"/>
+            <NumericPredictor name="longitude" coefficient="1.238009786077277E-4"/>
+            <NumericPredictor name="zon_winds" coefficient="-0.07364295448649694"/>
+            <NumericPredictor name="mer_winds" coefficient="-0.04315230485415502"/>
+            <NumericPredictor name="humidity" coefficient="-0.011583900555823673"/>
+            <NumericPredictor name="s_s_temp" coefficient="0.7840777698224044"/>
+        </RegressionTable>
+    </RegressionModel>
+</PMML>

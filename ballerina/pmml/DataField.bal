@@ -11,15 +11,13 @@ function getDataFieldElement (xml dataDictionary, int elementNumber) (xml) {
 }
 
 function getNumberOfDataFields (xml dataDictionary) (int) {
-    // TODO the `.elements()` part should be in getDataFieldElements() function.
     xml dataFields = getDataFieldElements(dataDictionary);
     return lengthof dataFields;
 }
 
 function getDataFieldElementsWithoutTarget (xml dataDictionary, string targetName) (xml) {
-    // TODO complete
     int i = 0;
-    xml dataFields = getDataFieldElements(dataDictionary).elements();
+    xml dataFields = getDataFieldElements(dataDictionary);
     xml dataFieldsWithoutTarget;
     while (i < lengthof dataFields) {
         xml dataField = dataFields[i];

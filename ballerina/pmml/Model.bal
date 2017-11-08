@@ -6,8 +6,6 @@ public function executeModel (xml pmml, xml data) (float) {
     }
 
     float result;
-
-    // TODO make the identification of the models better
     string modelType = getModelType(pmml);
     if (modelType.contains("GeneralRegressionModel")) {
         throw generateError("the model " + modelType + " is currently not supported");
@@ -20,10 +18,6 @@ public function executeModel (xml pmml, xml data) (float) {
 }
 
 function getModelElement (xml pmml) (xml) {
-    if (!isValid(pmml)) {
-        throw invalidPMMLElementError();
-    }
-
     xml modelElement = null;
     int index = 0;
     boolean modelFound = false;
