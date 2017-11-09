@@ -1,8 +1,10 @@
 package ballerina.pmml;
 
 import ballerina.log;
+import ballerina.math;
 
 public function executeRegressionModel (xml pmml, xml data) (float) {
+    // TODO add polynomial regression and logistic regression.
     float result;
     // Check if the argument is a valid PMML element.
     if (!isValid(pmml)) {
@@ -70,6 +72,9 @@ function executeRegressionFunction (xml pmml, xml data) (float) {
             predictor.optype = "continuous";
 
             var exponent, _ = <int>predictorElement@["exponent"];
+            if (exponent == 0) {
+                exponent = 1;
+            }
             predictor.exponent = exponent;
 
             var coefficient, _ = <float>predictorElement@["coefficient"];
@@ -153,8 +158,7 @@ function executeRegressionFunction (xml pmml, xml data) (float) {
 
 
 function calculateOutput (json model, json data) (float) {
-    // TODO make the exponents count
-    // TODO add functionality for PMML 4.2, & 4.3.
+    // TODO add functionality for PMML 4.2 only.
     var output, _ = <float>model.intercept.toString();
     int numberOfPredictors = lengthof model.predictors;
     int i = 0;
@@ -164,14 +168,17 @@ function calculateOutput (json model, json data) (float) {
         string valueStr = data[name].toString();
         var coefficient = 0.0;
         var value = 0.0;
+        var exponent = 1;
         if (opType == "continuous") {
             coefficient, _ = <float>model.predictors[i].coefficient.toString();
             value, _ = <float>valueStr;
+            exponent, _ = <int>model.predictors[i].exponent.toString();
         } else if (opType == "categorical") {
             coefficient, _ = <float>model.predictors[i].value[valueStr].toString();
             value = 1;
+            exponent = 1;
         }
-        output = output + (coefficient * value);
+        output = output + (coefficient * math:pow(value, exponent));
 
         i = i + 1;
     }

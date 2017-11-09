@@ -6,7 +6,7 @@ import ballerina.io;
 
 function main (string[] args) {
     // Read PMML File and add it to an XML element.
-    file:File file = {path:"pmml/test/res/LinearRegression2.xml"};
+    file:File file = {path:"pmml/test/res/LinearRegression.xml"};
     io:ByteChannel byteChannel = file.openChannel("r");
     blob bytes;
     int numberOfBytes;
@@ -20,14 +20,14 @@ function main (string[] args) {
     println("Model Type: " + pmml:getModelType(pmml) + "\n");
 
     // TODO make sure the input has a root element `<data>` for the input. Name could change accordingly.
+    // TODO add proper error messages for invalid data inputs.
+    // TODO add an implementation with multiple <car_location/> elements.
+    // TODO in polynomial regression there can be multiple continuous values added. Add that as an implementation.
     // Execute the linear regression model.
     xml data = xml `<data>
-                        <latitude>1</latitude>
-                        <longitude>1</longitude>
-                        <zon_winds>1</zon_winds>
-                        <mer_winds>1</mer_winds>
-                        <humidity>1</humidity>
-                        <s_s_temp>1</s_s_temp>
+                        <age>20</age>
+                        <salary>10000</salary>
+                        <car_location>carpark</car_location>
                     </data>`;
     println("Predicted Result Is: " + pmml:executeModel(pmml, data));
 
