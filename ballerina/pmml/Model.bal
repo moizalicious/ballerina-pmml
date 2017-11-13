@@ -30,7 +30,7 @@ function getModelElement (xml pmml) (xml) {
         index = index + 1;
     }
     if (!modelFound) {
-        throw generateError("there is no ML model available in the pmml");
+        throw generateError("no valid model available in the pmml");
     }
     return modelElement;
 }

@@ -1,34 +1,25 @@
-<PMML version="4.2" xmlns="http://www.dmg.org/PMML-4_2">
-    <Header copyright="DMG">
-        <Application name="KNIME" version="2.6.2"/>
-    </Header>
-    <DataDictionary numberOfFields="7">
-        <DataField name="latitude" optype="continuous" dataType="double"/>
-        <DataField name="longitude" optype="continuous" dataType="double"/>
-        <DataField name="zon_winds" optype="continuous" dataType="double"/>
-        <DataField name="mer_winds" optype="continuous" dataType="double"/>
-        <DataField name="humidity" optype="continuous" dataType="double"/>
-        <DataField name="airtemp" optype="continuous" dataType="double"/>
-        <DataField name="s_s_temp" optype="continuous" dataType="double"/>
+<PMML xmlns="http://www.dmg.org/PMML-4_2" version="4.2">
+    <Header copyright="DMG.org"/>
+    <DataDictionary numberOfFields="3">
+        <DataField name="salary" optype="continuous" dataType="double"/>
+        <DataField name="car_location" optype="categorical" dataType="string">
+            <Value value="carpark"/>
+            <Value value="street"/>
+        </DataField>
+        <DataField name="number_of_claims" optype="continuous" dataType="integer"/>
     </DataDictionary>
-    <RegressionModel functionName="regression" algorithmName="LinearRegression" modelName="KNIME Linear Regression"
-                     targetFieldName="airtemp">
+    <RegressionModel functionName="regression" modelName="Sample for stepwise polynomial regression" algorithmName="stepwisePolynomialRegression" targetFieldName="number_of_claims">
         <MiningSchema>
-            <MiningField name="latitude"/>
-            <MiningField name="longitude"/>
-            <MiningField name="zon_winds"/>
-            <MiningField name="mer_winds"/>
-            <MiningField name="humidity"/>
-            <MiningField name="s_s_temp"/>
-            <MiningField name="airtemp" usageType="target"/>
+            <MiningField name="salary"/>
+            <MiningField name="car_location"/>
+            <MiningField name="number_of_claims" usageType="target"/>
         </MiningSchema>
-        <RegressionTable intercept="6.008706171265235">
-            <NumericPredictor name="latitude" coefficient="3.363167396766842E-4"/>
-            <NumericPredictor name="longitude" coefficient="1.238009786077277E-4"/>
-            <NumericPredictor name="zon_winds" coefficient="-0.07364295448649694"/>
-            <NumericPredictor name="mer_winds" coefficient="-0.04315230485415502"/>
-            <NumericPredictor name="humidity" coefficient="-0.011583900555823673"/>
-            <NumericPredictor name="s_s_temp" coefficient="0.7840777698224044"/>
+        <RegressionTable intercept="3216.38">
+            <NumericPredictor name="salary" exponent="1" coefficient="-0.08"/>
+            <NumericPredictor name="salary" exponent="2" coefficient="9.54E-7"/>
+            <NumericPredictor name="salary" exponent="3" coefficient="-2.67E-12"/>
+            <CategoricalPredictor name="car_location" value="carpark" coefficient="93.78"/>
+            <CategoricalPredictor name="car_location" value="street" coefficient="288.75"/>
         </RegressionTable>
     </RegressionModel>
 </PMML>

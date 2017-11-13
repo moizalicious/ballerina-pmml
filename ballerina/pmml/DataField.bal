@@ -2,12 +2,19 @@ package ballerina.pmml;
 
 function getDataFieldElements (xml dataDictionary) (xml) {
     xml dataFields = dataDictionary.children().elements().strip();
+    if (dataFields.isEmpty()) {
+        throw generateError("no data field elements found");
+    }
     return dataFields;
 }
 
 function getDataFieldElement (xml dataDictionary, int elementNumber) (xml) {
     xml dataFieldElements = getDataFieldElements(dataDictionary);
-    return dataFieldElements[elementNumber];
+    xml dataField = dataFieldElements[elementNumber];
+    if (dataField.isEmpty()) {
+        throw generateError("the data field with element number " + elementNumber + " was not found");
+    }
+    return dataField;
 }
 
 function getNumberOfDataFields (xml dataDictionary) (int) {
@@ -29,6 +36,9 @@ function getDataFieldElementsWithoutTarget (xml dataDictionary, string targetNam
             }
         }
         i = i + 1;
+    }
+    if (dataFieldsWithoutTarget.isEmpty()) {
+        throw generateError("there are no data fields that is not a target field");
     }
     return dataFieldsWithoutTarget;
 }

@@ -19,6 +19,10 @@ public function executeRegressionModel (xml pmml, xml data) (float) {
     return result;
 }
 
+function executeClassificationFunction() {
+    // TODO complete.
+}
+
 function executeRegressionFunction (xml pmml, xml data) (float) {
     // Get the <RegressionModel> element from the pmml.
     xml modelElement = getModelElement(pmml);

@@ -16,14 +16,13 @@ public function isValid (xml pmml) (boolean) {
     boolean isSingleton = pmml.isSingleton();
     string elementName = pmml.getElementName();
     xmlns "http://www.dmg.org/PMML-4_2" as ns2;
-    xmlns "http://www.dmg.org/PMML-4_3" as ns3;
     string pmmlVersion = pmml@["version"];
     // Check whether the pmml has a valid ML model element
     boolean isValidModelType = hasValidModelType(pmml);
     // Check whether the XML is a valid PMML element.
     if (!isEmpty && (itemType == "element") && isSingleton && isValidModelType) {
-        if (elementName == ns2:PMML || elementName == ns3:PMML) {
-            if (pmmlVersion == "4.2" || pmmlVersion == "4.3") {
+        if (elementName == ns2:PMML) {
+            if (pmmlVersion == "4.2") {
                 return true;
             } else {
                 return false;
