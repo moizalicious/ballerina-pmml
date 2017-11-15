@@ -306,5 +306,31 @@ function calculateRegressionOutput (json dataDictionary, json miningSchema, json
 
         i = i + 1;
     }
+
+
+    string targetFieldName = "";
+    i = 0;
+    while (i < lengthof miningSchema.miningFields) {
+        if (miningSchema.miningFields[i].usageType.toString() == "target") {
+            targetFieldName = miningSchema.miningFields[i].name.toString();
+            break;
+        }
+        i = i + 1;
+    }
+
+    if (targetFieldName == "") {
+        throw generateError("unable to find the target field");
+    }
+
+    i = 0;
+    while (i < lengthof dataDictionary.dataFields) {
+        if (dataDictionary.dataFields[i].name.toString() == targetFieldName) {
+            if (dataDictionary.dataFields[i].dataType.toString() == "integer") {
+                output = <int>output;
+            }
+        }
+
+        i = i + 1;
+    }
     log:printInfo("Output: " + output);
 }
