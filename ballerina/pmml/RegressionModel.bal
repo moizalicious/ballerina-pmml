@@ -95,6 +95,14 @@ function executeRegressionFunction (xml pmml, xml data) (float) {
         i = i + 1;
     }
     log:printInfo("Regression Table: " + regressionTableJSON.toString());
+
+    // TODO check the data and see whether the input is valid.
+    // Convert the data XML entered by the user to JSON.
+    xmlOptions options = {};
+    json dataJSON = data.children().strip().toJSON(options);
+    log:printInfo("Data Entered: " + dataJSON.toString());
+    calculateRegressionOutput(dataDictionaryJSON, miningSchemaJSON, regressionTableJSON, dataJSON);
+
     return 0.0;
     //// Get the <RegressionModel> element from the pmml.
     //xml modelElement = getModelElement(pmml);
@@ -266,10 +274,37 @@ function calculateOutput (json model, json data) (float) {
     }
 }
 
-function getRegressionTableElement(xml modelElement)(xml) {
+function getRegressionTableElement (xml modelElement) (xml) {
     xml regressionTableElement = modelElement.selectChildren("RegressionTable");
     if (regressionTableElement.isEmpty()) {
         throw generateError("no regression table element found");
     }
     return regressionTableElement;
+}
+
+function calculateRegressionOutput (json dataDictionary, json miningSchema, json regressionTable, json data) {
+    var output, _ = <float>regressionTable.intercept.toString();
+    int i = 0;
+    while (i < lengthof regressionTable.predictors) {
+        if (regressionTable.predictors[i].predictorType.toString() == "numericPredictor") {
+            string name = regressionTable.predictors[i].name.toString();
+            var value, _ = <float>data[name].toString();
+            var exponent, _ = <int>regressionTable.predictors[i].exponent.toString();
+            var coefficient, _ = <float>regressionTable.predictors[i].coefficient.toString();
+            output = output + (coefficient * math:pow(value, exponent));
+        } else if (regressionTable.predictors[i].predictorType.toString() == "categoricalPredictor") {
+            string name = regressionTable.predictors[i].name.toString();
+            string regressionTableValue = regressionTable.predictors[i].value.toString();
+            string dataValue = data[name].toString();
+            int value = 0;
+            if (dataValue == regressionTableValue) {
+                value = 1;
+            }
+            var coefficient, _ = <float>regressionTable.predictors[i].coefficient.toString();
+            output = output + (coefficient * value);
+        }
+
+        i = i + 1;
+    }
+    log:printInfo("Output: " + output);
 }
