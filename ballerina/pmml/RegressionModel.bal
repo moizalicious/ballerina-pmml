@@ -3,7 +3,7 @@ package ballerina.pmml;
 import ballerina.log;
 import ballerina.math;
 
-public function executeRegressionModel (xml pmml, xml data) (float) {
+function executeRegressionModel (xml pmml, xml data) (float) {
     // TODO add logistic regression.
     float result;
     // Check if the argument is a valid PMML element.
@@ -23,16 +23,22 @@ public function executeRegressionModel (xml pmml, xml data) (float) {
     xml modelElement = getModelElement(pmml);
     string functionName = modelElement@["functionName"];
     if (functionName == "regression") {
-        result = executeRegressionFunction(pmml, data);
+        if (lengthof getRegressionTableElement(getModelElement(pmml) == 1)) {
+            result = executeLinearRegression(pmml, data);
+        } else if (lengthof getRegressionTableElement(getModelElement(pmml) == 2)) {
+            executeLogisticRegression(pmml, data);
+        } else {
+            throw generateError("more than 2 regression table elements found, use classification instead");
+        }
+    } else if (functionName == "classification") {
+        executeClassification(pmml, data);// TODO this should return a result.
+    } else {
+        throw generateError("no valid 'functionName' attribute found");
     }
     return result;
 }
 
-function executeClassificationFunction () {
-    // TODO complete.
-}
-
-function executeRegressionFunction (xml pmml, xml data) (float) {
+function executeLinearRegression (xml pmml, xml data) (float) {
     int i = 0;
     int c = 0;
 
@@ -110,20 +116,12 @@ function executeRegressionFunction (xml pmml, xml data) (float) {
     xmlOptions options = {};
     json dataJSON = data.children().strip().toJSON(options);
     log:printInfo("Data Entered: " + dataJSON.toString());
-    calculateRegressionOutput(dataDictionaryJSON, miningSchemaJSON, regressionTableJSON, dataJSON);
+    calculateLinearRegressionOutput(dataDictionaryJSON, miningSchemaJSON, regressionTableJSON, dataJSON);
 
     return 0.0;
 }
 
-function getRegressionTableElement (xml modelElement) (xml) {
-    xml regressionTableElement = modelElement.selectChildren("RegressionTable");
-    if (regressionTableElement.isEmpty()) {
-        throw generateError("no regression table element found");
-    }
-    return regressionTableElement;
-}
-
-function calculateRegressionOutput (json dataDictionary, json miningSchema, json regressionTable, json data) {
+function calculateLinearRegressionOutput (json dataDictionary, json miningSchema, json regressionTable, json data) {
     var output, _ = <float>regressionTable.intercept.toString();
     int i = 0;
     while (i < lengthof regressionTable.predictors) {
@@ -174,4 +172,28 @@ function calculateRegressionOutput (json dataDictionary, json miningSchema, json
         i = i + 1;
     }
     log:printInfo("Output: " + output);
+}
+
+function executeLogisticRegression (xml pmml, json data) {
+    // TODO complete.
+}
+
+function calculateLogisticRegressionOutput() {
+    // TODO complete.
+}
+
+function executeClassification (xml pmml, json data) {
+    // TODO complete.
+}
+
+function calculateClassificationOutput() {
+    // TODO complete.
+}
+
+function getRegressionTableElement (xml modelElement) (xml) {
+    xml regressionTableElement = modelElement.selectChildren("RegressionTable");
+    if (regressionTableElement.isEmpty()) {
+        throw generateError("no regression table element found");
+    }
+    return regressionTableElement;
 }
