@@ -35,8 +35,8 @@ public function isValid (xml pmml) (boolean) {
     }
 }
 
-function hasChildElement (xml pmml, string elementName) (boolean) {
-    xml element = pmml.selectChildren(elementName);
+function hasChildElement (xml x, string elementName) (boolean) {
+    xml element = x.selectChildren(elementName);
     if (!element.isEmpty()) {
         return true;
     } else {

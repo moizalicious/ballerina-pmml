@@ -23,9 +23,9 @@ function executeRegressionModel (xml pmml, xml data) (float) {
     xml modelElement = getModelElement(pmml);
     string functionName = modelElement@["functionName"];
     if (functionName == "regression") {
-        if (lengthof getRegressionTableElement(getModelElement(pmml) == 1)) {
+        if ((lengthof getRegressionTableElement(getModelElement(pmml)) == 1)) {
             result = executeLinearRegression(pmml, data);
-        } else if (lengthof getRegressionTableElement(getModelElement(pmml) == 2)) {
+        } else if ((lengthof getRegressionTableElement(getModelElement(pmml)) == 2)) {
             executeLogisticRegression(pmml, data);
         } else {
             throw generateError("more than 2 regression table elements found, use classification instead");
@@ -174,19 +174,22 @@ function calculateLinearRegressionOutput (json dataDictionary, json miningSchema
     log:printInfo("Output: " + output);
 }
 
-function executeLogisticRegression (xml pmml, json data) {
+function executeLogisticRegression (xml pmml, xml data) {
     // TODO complete.
 }
 
-function calculateLogisticRegressionOutput() {
+function calculateLogisticRegressionOutput () {
     // TODO complete.
 }
 
-function executeClassification (xml pmml, json data) {
+function executeClassification (xml pmml, xml data) {
     // TODO complete.
+    // Get the normalization method.
+    string normalizationMethod = getModelElement(pmml)@["normalizationMethod"];
+
 }
 
-function calculateClassificationOutput() {
+function calculateClassificationOutput () {
     // TODO complete.
 }
 
@@ -196,4 +199,51 @@ function getRegressionTableElement (xml modelElement) (xml) {
         throw generateError("no regression table element found");
     }
     return regressionTableElement;
+}
+
+function getYValue (xml regressionTable, xml data) (float) {
+    var intercept, _ = <float>regressionTable@["intercept"];
+    if (regressionTable.strip().children().isEmpty()) {
+        return intercept;
+    }
+
+    float output = intercept;
+    int i = 0;
+    xml predictors = regressionTable.strip().children().elements();
+    while (i < lengthof predictors) {
+        xml predictor = predictors[i];
+        if (predictor.getElementName() == "NumericalPredictor") {
+            string name = predictor@["name"];
+            var exponent, _ = <int>predictor@["exponent"];
+            if (exponent == 0) {
+                exponent = 1;
+            }
+            var coefficient, _ = <float>predictor@["coefficient"];
+            var independent = 0.0;
+            if (hasChildElement(data, name)) {
+                independent, _ = <float>data.selectChildren(name).getTextValue();
+            } else {
+                throw generateError(name + " element was not found in the <data> element");
+            }
+            output = output + (coefficient * math:pow(independent, exponent));
+        } else if (predictor.getElementName() == "CategoricalPredictor") {
+            string name = predictor@["name"];
+            string value = predictor@["value"];
+            var coefficient, _ = <float> predictor@["coefficient"];
+
+            if (!hasChildElement(data, name)) {
+                throw generateError(name + " element was not found in the data element");
+            }
+            string independent = data.selectChildren(name).getTextValue();
+
+            if (independent == value) {
+                output = output + coefficient;
+            }
+        } else {
+            // TODO decide what to do.
+            throw generateError("invaid element: " + predictor.getElementName());
+        }
+        i = i + 1;
+    }
+    return output;
 }

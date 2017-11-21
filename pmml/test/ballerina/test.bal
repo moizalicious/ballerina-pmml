@@ -6,7 +6,7 @@ import ballerina.io;
 
 function main (string[] args) {
     // Read PMML File and add it to an XML element.
-    file:File file = {path:"pmml/test/res/LinearRegression.xml"};
+    file:File file = {path:"pmml/test/res/Classification.xml"};
     io:ByteChannel byteChannel = file.openChannel("r");
     blob bytes;
     int numberOfBytes;
