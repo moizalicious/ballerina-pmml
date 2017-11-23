@@ -23,10 +23,10 @@ function executeRegressionModel (xml pmml, xml data) (float) {
     xml modelElement = getModelElement(pmml);
     string functionName = modelElement@["functionName"];
     if (functionName == "regression") {
-        if ((lengthof getRegressionTableElement(getModelElement(pmml)) == 1)) {
+        if ((lengthof getRegressionTableElements(getModelElement(pmml)) == 1)) {
             result = executeLinearRegression(pmml, data);
-        } else if ((lengthof getRegressionTableElement(getModelElement(pmml)) == 2)) {
-            executeLogisticRegression(pmml, data);
+        } else if ((lengthof getRegressionTableElements(getModelElement(pmml)) == 2)) {
+            executeLogisticRegression(pmml, data); // TODO this should return a result.
         } else {
             throw generateError("more than 2 regression table elements found, use classification instead");
         }
@@ -88,7 +88,7 @@ function executeLinearRegression (xml pmml, xml data) (float) {
 
     // Get the <RegressionTable> element as a JSON.
     json regressionTableJSON = {};
-    xml regressionTableElement = getRegressionTableElement(getModelElement(pmml));
+    xml regressionTableElement = getRegressionTableElements(getModelElement(pmml));
     regressionTableJSON.intercept = regressionTableElement@["intercept"];
     xml regressionTableXML = regressionTableElement.children().elements();
     regressionTableJSON.predictors = [];
@@ -116,12 +116,12 @@ function executeLinearRegression (xml pmml, xml data) (float) {
     xmlOptions options = {};
     json dataJSON = data.children().strip().toJSON(options);
     log:printInfo("Data Entered: " + dataJSON.toString());
-    calculateLinearRegressionOutput(dataDictionaryJSON, miningSchemaJSON, regressionTableJSON, dataJSON);
+    float output = calculateLinearRegressionOutput(dataDictionaryJSON, miningSchemaJSON, regressionTableJSON, dataJSON);
 
-    return 0.0;
+    return output;
 }
 
-function calculateLinearRegressionOutput (json dataDictionary, json miningSchema, json regressionTable, json data) {
+function calculateLinearRegressionOutput (json dataDictionary, json miningSchema, json regressionTable, json data) (float) {
     var output, _ = <float>regressionTable.intercept.toString();
     int i = 0;
     while (i < lengthof regressionTable.predictors) {
@@ -172,6 +172,7 @@ function calculateLinearRegressionOutput (json dataDictionary, json miningSchema
         i = i + 1;
     }
     log:printInfo("Output: " + output);
+    return output;
 }
 
 function executeLogisticRegression (xml pmml, xml data) {
@@ -187,13 +188,61 @@ function executeClassification (xml pmml, xml data) {
     // Get the normalization method.
     string normalizationMethod = getModelElement(pmml)@["normalizationMethod"];
 
+    // Get the values from the regression table
+    xml regressionTables = getRegressionTableElements(getModelElement(pmml));
+    float[] values = [];
+    float sumOfValues = 0;
+    int i = 0;
+    while (i < lengthof regressionTables) {
+        xml regressionTable = regressionTables[i];
+        values[i] = getYValue(regressionTable, data);
+        sumOfValues = sumOfValues + values[i];
+        i = i + 1;
+    }
+    print("Values: ");
+    println(values);
+    print("Sum Of Values: ");
+    println(sumOfValues);
+
+    // TODO find the result category.
+    float[] probabilities = [];
+    i = 0;
+    while (i < lengthof values) {
+        if (normalizationMethod == "softmax") {
+            probabilities[i] = math:exp(values[i]) / (math:exp(sumOfValues));
+        } else if (normalizationMethod == "simplemax") {
+            probabilities[i] = values[i] / sumOfValues;
+        }
+        i = i + 1;
+    }
+    print("Probabilities: ");
+    println(probabilities);
+
+    // Find the maximum probability.
+    float max = 1E-100000;
+    i = 0;
+    while (i < lengthof probabilities) {
+        if (probabilities[i] > max) {
+            max = probabilities[i];
+        }
+        i = i + 1;
+    }
+    println("Max: "+ max);
+
+    // Get the target category.
+    string targetCategory;
+    i = 0;
+    while (i < lengthof probabilities) {
+        if (probabilities[i] == max) {
+            xml regressionTable = regressionTables[i];
+            targetCategory = regressionTable@["targetCategory"];
+        }
+        i = i + 1;
+    }
+    println("Target Category: " + targetCategory);
 }
 
-function calculateClassificationOutput () {
-    // TODO complete.
-}
-
-function getRegressionTableElement (xml modelElement) (xml) {
+function getRegressionTableElements (xml modelElement) (xml) {
     xml regressionTableElement = modelElement.selectChildren("RegressionTable");
     if (regressionTableElement.isEmpty()) {
         throw generateError("no regression table element found");
@@ -212,7 +261,8 @@ function getYValue (xml regressionTable, xml data) (float) {
     xml predictors = regressionTable.strip().children().elements();
     while (i < lengthof predictors) {
         xml predictor = predictors[i];
-        if (predictor.getElementName() == "NumericalPredictor") {
+        string elementName = predictor.getElementName();
+        if (elementName.contains("NumericPredictor")) {
             string name = predictor@["name"];
             var exponent, _ = <int>predictor@["exponent"];
             if (exponent == 0) {
@@ -226,10 +276,10 @@ function getYValue (xml regressionTable, xml data) (float) {
                 throw generateError(name + " element was not found in the <data> element");
             }
             output = output + (coefficient * math:pow(independent, exponent));
-        } else if (predictor.getElementName() == "CategoricalPredictor") {
+        } else if (elementName.contains("CategoricalPredictor")) {
             string name = predictor@["name"];
             string value = predictor@["value"];
-            var coefficient, _ = <float> predictor@["coefficient"];
+            var coefficient, _ = <float>predictor@["coefficient"];
 
             if (!hasChildElement(data, name)) {
                 throw generateError(name + " element was not found in the data element");

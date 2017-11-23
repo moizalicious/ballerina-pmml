@@ -24,9 +24,10 @@ function main (string[] args) {
     // TODO there cannot be multiple elements with the same name in this type of input
     // Execute the linear regression model.
     xml data = xml `<data>
-                        <age>20</age>
-                        <salary>10000</salary>
-                        <car_location>carpark</car_location>
+                        <age>19</age>
+                        <work>8</work>
+                        <sex>1</sex>
+                        <minority>1</minority>
                     </data>`;
     println("Predicted Result Is: " + pmml:executeModel(pmml, data));
 
