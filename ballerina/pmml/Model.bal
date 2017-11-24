@@ -1,11 +1,11 @@
 package ballerina.pmml;
 
-public function executeModel (xml pmml, xml data) (float) {
+public function executeModel (xml pmml, xml data) (any) {
     if (!isValid(pmml)) {
         throw invalidPMMLElementError();
     }
 
-    float result;
+    any result;
     string modelType = getModelType(pmml);
     if (modelType.contains("GeneralRegressionModel")) {
         throw generateError("the model " + modelType + " is currently not supported");

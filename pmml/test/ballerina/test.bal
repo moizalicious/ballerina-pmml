@@ -29,6 +29,7 @@ function main (string[] args) {
                         <sex>1</sex>
                         <minority>1</minority>
                     </data>`;
-    println("Predicted Result Is: " + pmml:executeModel(pmml, data));
+    print("The output is: ");
+    println(pmml:executeModel(pmml, data));
 
 }

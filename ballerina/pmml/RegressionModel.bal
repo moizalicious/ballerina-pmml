@@ -3,9 +3,9 @@ package ballerina.pmml;
 import ballerina.log;
 import ballerina.math;
 
-function executeRegressionModel (xml pmml, xml data) (float) {
+function executeRegressionModel (xml pmml, xml data) (any) {
     // TODO add logistic regression.
-    float result;
+    any result;
     // Check if the argument is a valid PMML element.
     if (!isValid(pmml)) {
         throw invalidPMMLElementError();
@@ -31,7 +31,7 @@ function executeRegressionModel (xml pmml, xml data) (float) {
             throw generateError("more than 2 regression table elements found, use classification instead");
         }
     } else if (functionName == "classification") {
-        executeClassification(pmml, data);// TODO this should return a result.
+        result = executeClassification(pmml, data);// TODO this should return a result.
     } else {
         throw generateError("no valid 'functionName' attribute found");
     }
@@ -39,85 +39,10 @@ function executeRegressionModel (xml pmml, xml data) (float) {
 }
 
 function executeLinearRegression (xml pmml, xml data) (float) {
-    int i = 0;
-    int c = 0;
-
-    // Get the <DataDictionary> element as a JSON.
-    json dataDictionaryJSON = {};
-    dataDictionaryJSON.dataFields = [];
-    xml dataFieldsXML = getDataFieldElements(getDataDictionaryElement(pmml));
-    i = 0;
-    while (i < lengthof dataFieldsXML) {
-        json dataField = {};
-        dataField.name = dataFieldsXML[i]@["name"];
-        dataField.optype = dataFieldsXML[i]@["optype"];
-        dataField.dataType = dataFieldsXML[i]@["dataType"];
-
-        if (dataFieldsXML[i]@["optype"] == "categorical") {
-            xml values = dataFieldsXML.selectChildren("Value");
-            dataField.values = [];
-            c = 0;
-            while (c < lengthof values) {
-                dataField.values[c] = values[c]@["value"];
-                c = c + 1;
-            }
-        }
-
-        dataDictionaryJSON.dataFields[i] = dataField;
-        i = i + 1;
-    }
-    log:printInfo("Data Dictionary: " + dataDictionaryJSON.toString());
-
-    // Get the <MiningSchema> element as a JSON.
-    json miningSchemaJSON = {};
-    miningSchemaJSON.miningFields = [];
-    xml miningSchemaXML = getMiningFieldElements(getMiningSchemaElement(pmml));
-    i = 0;
-    while (i < lengthof miningSchemaXML) {
-        json miningField = {};
-        miningField.name = miningSchemaXML[i]@["name"];
-        if (!(miningSchemaXML[i]@["usageType"] == "")) {
-            miningField.usageType = miningSchemaXML[i]@["usageType"];
-        } else {
-            miningField.usageType = "active";
-        }
-        miningSchemaJSON.miningFields[i] = miningField;
-        i = i + 1;
-    }
-    log:printInfo("Mining Schema: " + miningSchemaJSON.toString());
-
-    // Get the <RegressionTable> element as a JSON.
-    json regressionTableJSON = {};
-    xml regressionTableElement = getRegressionTableElements(getModelElement(pmml));
-    regressionTableJSON.intercept = regressionTableElement@["intercept"];
-    xml regressionTableXML = regressionTableElement.children().elements();
-    regressionTableJSON.predictors = [];
-    i = 0;
-    while (i < lengthof regressionTableXML) {
-        json predictor = {};
-        if (regressionTableXML[i].getElementName().contains("NumericPredictor")) {
-            predictor.predictorType = "numericPredictor";
-            predictor.name = regressionTableXML[i]@["name"];
-            predictor.exponent = regressionTableXML[i]@["exponent"];
-            predictor.coefficient = regressionTableXML[i]@["coefficient"];
-        } else if (regressionTableXML[i].getElementName().contains("CategoricalPredictor")) {
-            predictor.predictorType = "categoricalPredictor";
-            predictor.name = regressionTableXML[i]@["name"];
-            predictor.value = regressionTableXML[i]@["value"];
-            predictor.coefficient = regressionTableXML[i]@["coefficient"];
-        }
-        regressionTableJSON.predictors[i] = predictor;
-        i = i + 1;
-    }
-    log:printInfo("Regression Table: " + regressionTableJSON.toString());
-
-    // TODO check the data and see whether the input is valid.
-    // Convert the data XML entered by the user to JSON.
-    xmlOptions options = {};
-    json dataJSON = data.children().strip().toJSON(options);
-    log:printInfo("Data Entered: " + dataJSON.toString());
-    float output = calculateLinearRegressionOutput(dataDictionaryJSON, miningSchemaJSON, regressionTableJSON, dataJSON);
-
+    // TODO handle errors.
+    // TODO If output is an integer switch to integer.
+    xml regressionTable = getRegressionTableElements(getModelElement(pmml));
+    float output = getYValue(regressionTable, data);
     return output;
 }
 
@@ -183,8 +108,9 @@ function calculateLogisticRegressionOutput () {
     // TODO complete.
 }
 
-function executeClassification (xml pmml, xml data) {
-    // TODO complete.
+function executeClassification (xml pmml, xml data) (string) {
+    // TODO handle errors.
+
     // Get the normalization method.
     string normalizationMethod = getModelElement(pmml)@["normalizationMethod"];
 
@@ -199,10 +125,6 @@ function executeClassification (xml pmml, xml data) {
         sumOfValues = sumOfValues + values[i];
         i = i + 1;
     }
-    print("Values: ");
-    println(values);
-    print("Sum Of Values: ");
-    println(sumOfValues);
 
     // TODO find the result category.
     float[] probabilities = [];
@@ -212,11 +134,11 @@ function executeClassification (xml pmml, xml data) {
             probabilities[i] = math:exp(values[i]) / (math:exp(sumOfValues));
         } else if (normalizationMethod == "simplemax") {
             probabilities[i] = values[i] / sumOfValues;
+        } else {
+            throw generateError(normalizationMethod + " is not a valid normaliation method");
         }
         i = i + 1;
     }
-    print("Probabilities: ");
-    println(probabilities);
 
     // Find the maximum probability.
     float max = 1E-100000;
@@ -227,7 +149,6 @@ function executeClassification (xml pmml, xml data) {
         }
         i = i + 1;
     }
-    println("Max: "+ max);
 
     // Get the target category.
     string targetCategory;
@@ -239,7 +160,8 @@ function executeClassification (xml pmml, xml data) {
         }
         i = i + 1;
     }
-    println("Target Category: " + targetCategory);
+
+    return targetCategory;
 }
 
 function getRegressionTableElements (xml modelElement) (xml) {
