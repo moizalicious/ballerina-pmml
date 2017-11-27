@@ -26,7 +26,7 @@ function executeRegressionModel (xml pmml, xml data) (any) {
         if ((lengthof getRegressionTableElements(getModelElement(pmml)) == 1)) {
             result = executeLinearRegression(pmml, data);
         } else if ((lengthof getRegressionTableElements(getModelElement(pmml)) == 2)) {
-            executeLogisticRegression(pmml, data); // TODO this should return a result.
+            result = executeLogisticRegression(pmml, data); // TODO this should return a result.
         } else {
             throw generateError("more than 2 regression table elements found, use classification instead");
         }
@@ -46,66 +46,34 @@ function executeLinearRegression (xml pmml, xml data) (float) {
     return output;
 }
 
-function calculateLinearRegressionOutput (json dataDictionary, json miningSchema, json regressionTable, json data) (float) {
-    var output, _ = <float>regressionTable.intercept.toString();
+function executeLogisticRegression (xml pmml, xml data)(float) {
+    // TODO complete.
+    xml regressionTables = getRegressionTableElements(getModelElement(pmml));
+    string normalizationMethod = getModelElement(pmml)@["normalizationMethod"];
+
+    if (!(lengthof regressionTables == 2)) {
+        throw generateError("there should be 2 regression table elements for logistic regression");
+    }
+
+    float[] values = [];
     int i = 0;
-    while (i < lengthof regressionTable.predictors) {
-        if (regressionTable.predictors[i].predictorType.toString() == "numericPredictor") {
-            string name = regressionTable.predictors[i].name.toString();
-            var value, _ = <float>data[name].toString();
-            var exponent, _ = <int>regressionTable.predictors[i].exponent.toString();
-            var coefficient, _ = <float>regressionTable.predictors[i].coefficient.toString();
-            output = output + (coefficient * math:pow(value, exponent));
-        } else if (regressionTable.predictors[i].predictorType.toString() == "categoricalPredictor") {
-            string name = regressionTable.predictors[i].name.toString();
-            string regressionTableValue = regressionTable.predictors[i].value.toString();
-            string dataValue = data[name].toString();
-            int value = 0;
-            if (dataValue == regressionTableValue) {
-                value = 1;
-            }
-            var coefficient, _ = <float>regressionTable.predictors[i].coefficient.toString();
-            output = output + (coefficient * value);
-        }
-
+    while (i < lengthof regressionTables) {
+        xml regressionTable = regressionTables[i];
+        values[i] = getYValue(regressionTable, data);
         i = i + 1;
     }
 
-
-    string targetFieldName = "";
+    float probability;
     i = 0;
-    while (i < lengthof miningSchema.miningFields) {
-        if (miningSchema.miningFields[i].usageType.toString() == "target") {
-            targetFieldName = miningSchema.miningFields[i].name.toString();
-            break;
+    while (i < lengthof values) {
+        if (values[i] != 0.0) {
+            log:printInfo(<string>values[0]);
+            probability = math:exp(values[i])/(math:exp(values[i]) + 1);
         }
         i = i + 1;
     }
 
-    if (targetFieldName == "") {
-        throw generateError("unable to find the target field");
-    }
-
-    i = 0;
-    while (i < lengthof dataDictionary.dataFields) {
-        if (dataDictionary.dataFields[i].name.toString() == targetFieldName) {
-            if (dataDictionary.dataFields[i].dataType.toString() == "integer") {
-                output = <int>output;
-            }
-        }
-
-        i = i + 1;
-    }
-    log:printInfo("Output: " + output);
-    return output;
-}
-
-function executeLogisticRegression (xml pmml, xml data) {
-    // TODO complete.
-}
-
-function calculateLogisticRegressionOutput () {
-    // TODO complete.
+    return probability;
 }
 
 function executeClassification (xml pmml, xml data) (string) {
@@ -126,7 +94,7 @@ function executeClassification (xml pmml, xml data) (string) {
         i = i + 1;
     }
 
-    // TODO find the result category.
+    // Find the result category.
     float[] probabilities = [];
     i = 0;
     while (i < lengthof values) {
@@ -141,8 +109,8 @@ function executeClassification (xml pmml, xml data) (string) {
     }
 
     // Find the maximum probability.
-    float max = 1E-100000;
-    i = 0;
+    float max = probabilities[0];
+    i = 1;
     while (i < lengthof probabilities) {
         if (probabilities[i] > max) {
             max = probabilities[i];
