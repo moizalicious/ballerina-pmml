@@ -1,6 +1,9 @@
 package ballerina.pmml;
 
 public function executeModel (xml pmml, xml data) (any) {
+    pmml.strip();
+    data.strip();
+
     if (!isValid(pmml)) {
         throw invalidPMMLElementError();
     }

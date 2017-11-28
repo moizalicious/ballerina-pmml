@@ -4,7 +4,6 @@ import ballerina.log;
 import ballerina.math;
 
 function executeRegressionModel (xml pmml, xml data) (any) {
-    // TODO add logistic regression.
     any result;
     // Check if the argument is a valid PMML element.
     if (!isValid(pmml)) {
@@ -26,12 +25,12 @@ function executeRegressionModel (xml pmml, xml data) (any) {
         if ((lengthof getRegressionTableElements(getModelElement(pmml)) == 1)) {
             result = executeLinearRegression(pmml, data);
         } else if ((lengthof getRegressionTableElements(getModelElement(pmml)) == 2)) {
-            result = executeLogisticRegression(pmml, data); // TODO this should return a result.
+            result = executeLogisticRegression(pmml, data);
         } else {
             throw generateError("more than 2 regression table elements found, use classification instead");
         }
     } else if (functionName == "classification") {
-        result = executeClassification(pmml, data);// TODO this should return a result.
+        result = executeClassification(pmml, data);
     } else {
         throw generateError("no valid 'functionName' attribute found");
     }
@@ -47,7 +46,6 @@ function executeLinearRegression (xml pmml, xml data) (float) {
 }
 
 function executeLogisticRegression (xml pmml, xml data)(float) {
-    // TODO complete.
     xml regressionTables = getRegressionTableElements(getModelElement(pmml));
     string normalizationMethod = getModelElement(pmml)@["normalizationMethod"];
 
@@ -56,20 +54,37 @@ function executeLogisticRegression (xml pmml, xml data)(float) {
     }
 
     float[] values = [];
+    float sumOfValues = 0;
+    float sumOfValuesExp = 0;
     int i = 0;
     while (i < lengthof regressionTables) {
         xml regressionTable = regressionTables[i];
         values[i] = getYValue(regressionTable, data);
+        sumOfValues = sumOfValues + values[i];
+        sumOfValuesExp = sumOfValuesExp + math:exp(values[i]);
         i = i + 1;
     }
 
-    float probability;
+    float[] probabilities = [];
     i = 0;
     while (i < lengthof values) {
-        if (values[i] != 0.0) {
-            log:printInfo(<string>values[0]);
-            probability = math:exp(values[i])/(math:exp(values[i]) + 1);
+        if (normalizationMethod == "softmax") {
+            probabilities[i] = math:exp(values[i]) / sumOfValuesExp;
+        } else if (normalizationMethod == "simplemax") {
+            probabilities[i] = values[i] / sumOfValues;
         }
+        i = i + 1;
+    }
+
+    float probability = 0;
+    i = 0;
+    while (i < lengthof regressionTables) {
+        xml regressionTable = regressionTables[i];
+        if (regressionTable@["targetCategory"] == "yes") {
+            probability = probabilities[i];
+            break;
+        }
+
         i = i + 1;
     }
 
@@ -86,11 +101,13 @@ function executeClassification (xml pmml, xml data) (string) {
     xml regressionTables = getRegressionTableElements(getModelElement(pmml));
     float[] values = [];
     float sumOfValues = 0;
+    float sumOfValuesExp = 0;
     int i = 0;
     while (i < lengthof regressionTables) {
         xml regressionTable = regressionTables[i];
         values[i] = getYValue(regressionTable, data);
         sumOfValues = sumOfValues + values[i];
+        sumOfValuesExp = sumOfValuesExp + math:exp(values[i]);
         i = i + 1;
     }
 
@@ -99,7 +116,7 @@ function executeClassification (xml pmml, xml data) (string) {
     i = 0;
     while (i < lengthof values) {
         if (normalizationMethod == "softmax") {
-            probabilities[i] = math:exp(values[i]) / (math:exp(sumOfValues));
+            probabilities[i] = math:exp(values[i]) / sumOfValuesExp;
         } else if (normalizationMethod == "simplemax") {
             probabilities[i] = values[i] / sumOfValues;
         } else {

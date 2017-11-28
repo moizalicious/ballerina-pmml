@@ -6,7 +6,7 @@ import ballerina.io;
 
 function main (string[] args) {
     // Read PMML File and add it to an XML element.
-    file:File file = {path:"pmml/test/res/LogisticRegression.pmml"};
+    file:File file = {path:"pmml/test/res/RegressionOzone.pmml"};
     io:ByteChannel byteChannel = file.openChannel("r");
     blob bytes;
     int numberOfBytes;
@@ -24,8 +24,9 @@ function main (string[] args) {
     // TODO there cannot be multiple elements with the same name in this type of input
     // Execute the linear regression model.
     xml data = xml `<data>
-                        <x1>-70</x1>
-                        <x2>50</x2>
+                        <temp>29.21533723</temp>
+                        <ibh>3.4234234234234</ibh>
+                        <ibt>0.3745627113818</ibt>
                     </data>`;
     print("The output is: ");
     println(pmml:executeModel(pmml, data));
