@@ -1,6 +1,5 @@
 package ballerina.pmml;
 
-import ballerina.log;
 import ballerina.math;
 
 function executeRegressionModel (xml pmml, xml data) (any) {
@@ -10,14 +9,8 @@ function executeRegressionModel (xml pmml, xml data) (any) {
         throw invalidPMMLElementError();
     }
 
-    // TODO look for duplicate child elements.
-    // Check whether the <data> element entered is valid.
-    boolean isEmpty = data.isEmpty();
-    boolean isSingleton = data.isSingleton();
-    boolean isElement = (data.getItemType() == "element");
-    if (!(!isEmpty && isSingleton && isElement)) {
-        throw generateError("invalid data element entered");
-    }
+    // Check if the data element is a valid one.
+    checkDataElementValidity(data);
 
     xml modelElement = getModelElement(pmml);
     string functionName = modelElement@["functionName"];
@@ -37,15 +30,43 @@ function executeRegressionModel (xml pmml, xml data) (any) {
     return result;
 }
 
-function executeLinearRegression (xml pmml, xml data) (float) {
-    // TODO handle errors.
-    // TODO If output is an integer switch to integer.
+function executeLinearRegression (xml pmml, xml data) (any) {
     xml regressionTable = getRegressionTableElements(getModelElement(pmml));
     float output = getYValue(regressionTable, data);
+
+    string targetName;
+    xml miningFields = getMiningFieldElements(getMiningSchemaElement(pmml));
+    int i = 0;
+    while (i < lengthof miningFields) {
+        xml miningField = miningFields[i];
+        if (miningField@["usageType"] == "target") {
+            targetName = miningField@["name"];
+        }
+        i = i + 1;
+    }
+
+    if (targetName == "") {
+        throw generateError("no target/predicted field provided in the PMML file");
+    }
+    
+    xml dataFields = getDataFieldElements(getDataDictionaryElement(pmml));
+    i = 0;
+    while (i < lengthof dataFields) {
+        xml dataField = dataFields[i];
+        if (dataField@["name"] == targetName) {
+            if (dataField@["dataType"] == "integer") {
+                return <int>output;
+            } else if(dataField@["dataType"] != "double") {
+                throw generateError("invalid data type entered for " + targetName);
+            }
+        }
+        i = i + 1;
+    }
+
     return output;
 }
 
-function executeLogisticRegression (xml pmml, xml data)(float) {
+function executeLogisticRegression (xml pmml, xml data) (float) {
     xml regressionTables = getRegressionTableElements(getModelElement(pmml));
     string normalizationMethod = getModelElement(pmml)@["normalizationMethod"];
 
@@ -92,8 +113,6 @@ function executeLogisticRegression (xml pmml, xml data)(float) {
 }
 
 function executeClassification (xml pmml, xml data) (string) {
-    // TODO handle errors.
-
     // Get the normalization method.
     string normalizationMethod = getModelElement(pmml)@["normalizationMethod"];
 
@@ -197,7 +216,7 @@ function getYValue (xml regressionTable, xml data) (float) {
                 output = output + coefficient;
             }
         } else {
-            // TODO decide what to do.
+            // TODO Add <PredictorTerm> element functionality.
             throw generateError("invaid element: " + predictor.getElementName());
         }
         i = i + 1;
