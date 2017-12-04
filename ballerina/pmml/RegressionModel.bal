@@ -48,7 +48,7 @@ function executeLinearRegression (xml pmml, xml data) (any) {
     if (targetName == "") {
         throw generateError("no target/predicted field provided in the PMML file");
     }
-    
+
     xml dataFields = getDataFieldElements(getDataDictionaryElement(pmml));
     i = 0;
     while (i < lengthof dataFields) {
@@ -56,7 +56,7 @@ function executeLinearRegression (xml pmml, xml data) (any) {
         if (dataField@["name"] == targetName) {
             if (dataField@["dataType"] == "integer") {
                 return <int>output;
-            } else if(dataField@["dataType"] != "double") {
+            } else if (dataField@["dataType"] != "double") {
                 throw generateError("invalid data type entered for " + targetName);
             }
         }
@@ -215,8 +215,29 @@ function getYValue (xml regressionTable, xml data) (float) {
             if (independent == value) {
                 output = output + coefficient;
             }
+        } else if (elementName.contains("PredictorTerm")) {
+            var coefficient, _ = <float>predictor@["coefficient"];
+            xml fieldRefs = predictor.children().elements();
+            float fieldRefTotalCoefficient = 1;
+
+            int c = 0;
+            while (c < lengthof fieldRefs) {
+                xml fieldRef = fieldRefs[c];
+                string field = fieldRef@["field"];
+
+                if (!hasChildElement(data, field)) {
+                    throw generateError(field + "element was not found in the <data> element");
+                } else {
+                    xml independentXML = data.selectChildren(field);
+                    var independent, _ = <float>independentXML.getTextValue();
+                    fieldRefTotalCoefficient = fieldRefTotalCoefficient * independent;
+                }
+                c = c + 1;
+            }
+
+            output = output + (coefficient * fieldRefTotalCoefficient);
+
         } else {
-            // TODO Add <PredictorTerm> element functionality.
             throw generateError("invaid element: " + predictor.getElementName());
         }
         i = i + 1;
