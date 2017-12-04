@@ -25,7 +25,7 @@ function checkDataElementValidity (xml data) {
     while (i < lengthof children - 1) {
         while (c < lengthof childrenCopy) {
             if (children[i].getElementName() == childrenCopy[c].getElementName()) {
-                throw generateError("duplicate element <" + children[i].getElementName() + "> found in the data input");
+                throw generateError("duplicate element <" + children[i].getElementName() + "> found in the <data> element");
             }
             c = c + 1;
         }

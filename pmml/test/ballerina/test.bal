@@ -6,7 +6,7 @@ import ballerina.io;
 
 function main (string[] args) {
     // Read PMML File and add it to an XML element.
-    file:File file = {path:"pmml/test/res/InteractionTerms.pmml"};
+    file:File file = {path:"pmml/test/res/LinearRegression.pmml"};
     io:ByteChannel byteChannel = file.openChannel("r");
     blob bytes;
     int numberOfBytes;
@@ -22,9 +22,9 @@ function main (string[] args) {
     // TODO complete all the error handling.
     // Execute the linear regression model.
     xml data = xml `<data>
-                        <sex>male</sex>
-                        <age>19</age>
-                        <work>8</work>
+                        <age>20</age>
+                        <salary>10000</salary>
+                        <car_location>carpark</car_location>
                     </data>`;
     print("The output is: ");
     println(pmml:executeModel(pmml, data));
