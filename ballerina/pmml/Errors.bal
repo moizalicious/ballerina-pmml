@@ -5,6 +5,11 @@ function invalidPMMLElementError () (error) {
     return err;
 }
 
+function unsupportedPMMLElementError () (error) {
+    error err = {msg:"the given PMML element is currently not supported"};
+    return err;
+}
+
 function generateError (string msg) (error) {
     error err = {msg:msg};
     return err;

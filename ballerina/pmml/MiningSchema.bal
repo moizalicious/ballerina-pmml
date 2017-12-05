@@ -1,7 +1,7 @@
 package ballerina.pmml;
 
-function getMiningSchemaElement (xml pmml)(xml) {
-    xml miningSchemaXML = getModelElement(pmml).selectChildren("MiningSchema").strip();
+function getMiningSchemaElement (xml modelElement)(xml) {
+    xml miningSchemaXML = modelElement.selectChildren("MiningSchema").strip();
     if (miningSchemaXML.isEmpty()) {
         throw generateError("no <MiningSchema> element found");
     }

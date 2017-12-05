@@ -35,7 +35,11 @@ function executeLinearRegression (xml pmml, xml data) (any) {
     float output = getYValue(regressionTable, data);
 
     string targetName;
-    xml miningFields = getMiningFieldElements(getMiningSchemaElement(pmml));
+    xml miningFields = getMiningFieldElements(
+                       getMiningSchemaElement(
+                       getModelElement(pmml)
+                       )
+                       );
     int i = 0;
     while (i < lengthof miningFields) {
         xml miningField = miningFields[i];

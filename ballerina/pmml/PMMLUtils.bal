@@ -1,15 +1,21 @@
 package ballerina.pmml;
 
 public function getVersion (xml pmml) (float) {
-    if (!isValid(pmml)) {
-        throw invalidPMMLElementError();
-    }
+    //if (!isValid(pmml)) {
+    //    throw invalidPMMLElementError();
+    //}
 
     var pmmlVersion, _ = <float>pmml@["version"];
     return pmmlVersion;
 }
 
-public function isValid (xml pmml) (boolean) {
+public function isValid(xml pmml)(boolean) {
+    // TODO complete
+    return true;
+}
+
+public function isPredictable (xml pmml) (boolean) {
+    // TODO fix to suit the API
     // Get XML information.
     boolean isEmpty = pmml.isEmpty();
     string itemType = pmml.getItemType();

@@ -34,7 +34,7 @@ function getDataFieldElementsWithoutTarget (xml dataDictionary, string targetNam
         i = i + 1;
     }
     if (dataFieldsWithoutTarget.isEmpty()) {
-        throw generateError("there is no <DataField> element with attribute usageType=\"target\"");
+        throw generateError("there is no <DataField> element which is not the target");
     }
     return dataFieldsWithoutTarget;
 }
