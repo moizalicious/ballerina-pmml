@@ -1,12 +1,12 @@
 package ballerina.pmml;
 
 public function executeModel (xml pmml, xml data) (any) {
-    // TODO remove the strips from all the other functions that are private.
     pmml = pmml.strip();
     data = data.strip();
 
-    if (!isValid(pmml)) {
-        throw invalidPMMLElementError();
+    var predictable, err = isPredictable(pmml);
+    if (!predictable) {
+        throw err;
     }
 
     any result;
@@ -43,8 +43,9 @@ function getModelElement (xml pmml) (xml) {
 }
 
 public function getModelType (xml pmml) (string) {
-    if (!isValid(pmml)) {
-        throw invalidPMMLElementError();
+    var valid, err = isValid(pmml);
+    if (!valid) {
+        throw err;
     }
 
     xml modelElement = getModelElement(pmml);

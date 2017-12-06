@@ -4,13 +4,18 @@ import ballerina.math;
 
 function executeRegressionModel (xml pmml, xml data) (any) {
     any result;
+
     // Check if the argument is a valid PMML element.
-    if (!isValid(pmml)) {
-        throw invalidPMMLElementError();
+    var predictable, err = isPredictable(pmml);
+    if (!predictable) {
+        throw err;
     }
 
     // Check if the data element is a valid one.
-    checkDataElementValidity(data);
+    var dataElementValid, err = isDataElementValid(data);
+    if (!dataElementValid) {
+        throw err;
+    }
 
     xml modelElement = getModelElement(pmml);
     string functionName = modelElement@["functionName"];

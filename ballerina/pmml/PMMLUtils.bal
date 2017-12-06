@@ -1,44 +1,64 @@
 package ballerina.pmml;
 
-public function getVersion (xml pmml) (float) {
-    //if (!isValid(pmml)) {
-    //    throw invalidPMMLElementError();
-    //}
+public function isValid (xml pmml) (boolean isValid, error err) {
 
-    var pmmlVersion, _ = <float>pmml@["version"];
-    return pmmlVersion;
+    if (pmml.isEmpty()) {
+        // Check whether the pmml parameter is empty.
+        isValid = false;
+        err = generateError("the PMML element cannot be empty empty");
+    } else if (pmml.getItemType() != "element") {
+        // Check if the PMML is of the xml element type.
+        isValid = false;
+        err = generateError("the PMML item has to be of element type");
+    } else if (!pmml.isSingleton()) {
+        // Check if the pmml element is a singleton element.
+        isValid = false;
+        err = generateError("the <PMML> element must be a singleton element");
+    } else if (!pmml.getElementName().contains("PMML")) {
+        // Check whether the element name of the pmml element is <PMML>.
+        isValid = false;
+        err = generateError("the root element name should be <PMML>");
+    } else if (pmml@["version"] == null) {
+        // Check whether the version number has been defined.
+        isValid = false;
+        err = generateError("the <PMML> element must have a 'version' attribute");
+    } else if (!hasValidModelType(pmml)) {
+        // Check whether the element has a valid sub-element or the ML model.
+        isValid = false;
+        err = generateError("no valid ML model element found in the <PMML> element");
+    } else {
+        isValid = true;
+        err = null;
+    }
+    // Return 'true' when the pmml element is valid.
+    return isValid, err;
 }
 
-public function isValid(xml pmml)(boolean) {
-    // TODO complete
-    return true;
-}
+public function isPredictable (xml pmml) (boolean isPredictable, error err) {
+    var valid, e = isValid(pmml);
+    if (!valid) {
+        return valid, e;
+    }
 
-public function isPredictable (xml pmml) (boolean) {
-    // TODO fix to suit the API
-    // Get XML information.
-    boolean isEmpty = pmml.isEmpty();
-    string itemType = pmml.getItemType();
-    boolean isSingleton = pmml.isSingleton();
-    string elementName = pmml.getElementName();
-    xmlns "http://www.dmg.org/PMML-4_2" as ns2;
+    xmlns "http://www.dmg.org/PMML-4_2" as ns;
     string pmmlVersion = pmml@["version"];
-    // Check whether the pmml has a valid ML model element
-    boolean isValidModelType = hasValidModelType(pmml);
+    string elementName = pmml.getElementName();
     // Check whether the XML is a valid PMML element.
-    if (!isEmpty && (itemType == "element") && isSingleton && isValidModelType) {
-        if (elementName == ns2:PMML) {
-            if (pmmlVersion == "4.2") {
-                return true;
-            } else {
-                return false;
-            }
+    if (pmmlVersion == "4.2") {
+        if (elementName == ns:PMML) {
+            isPredictable = true;
+            err = null;
         } else {
-            return false;
+            isPredictable  = false;
+            err = generateError("invorrect namespace, "
+                                + "please use \"http://www.dmg.org/PMML-4_2\" standard");
         }
     } else {
-        return false;
+        isPredictable = false;
+        err = generateError("only version 4.2 is currently supported");
     }
+
+    return isPredictable, err;
 }
 
 function hasChildElement (xml x, string elementName) (boolean) {
@@ -59,4 +79,14 @@ function hasValidModelType (xml pmml) (boolean) {
         index = index + 1;
     }
     return false;
+}
+
+public function getVersion (xml pmml) (float) {
+    var valid, err = isValid(pmml);
+    if (!valid) {
+        throw err;
+    }
+
+    var pmmlVersion, _ = <float>pmml@["version"];
+    return pmmlVersion;
 }

@@ -15,11 +15,13 @@ function main (string[] args) {
     var pmml, _ = <xml> s;
 
     // Test public functions of the API.
-    println("Is PMML valid: " + pmml:isValid(pmml));
+    var isValid, _ = pmml:isValid(pmml);
+    println("Is PMML valid: " + isValid);
     println("Version number: " + pmml:getVersion(pmml));
     println("Model Type: " + pmml:getModelType(pmml) + "\n");
 
     // TODO complete all the error handling.
+    // TODO organize and comment all of the code.
     // Execute the linear regression model.
     xml data = xml `<data>
                         <age>20</age>

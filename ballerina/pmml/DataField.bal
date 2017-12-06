@@ -1,7 +1,7 @@
 package ballerina.pmml;
 
 function getDataFieldElements (xml dataDictionary) (xml) {
-    xml dataFields = dataDictionary.children().elements().strip();
+    xml dataFields = dataDictionary.children().elements();
     if (dataFields.isEmpty()) {
         throw generateError("no <DataField> elements found");
     }

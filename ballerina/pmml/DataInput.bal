@@ -1,34 +1,38 @@
 package ballerina.pmml;
 
-function checkDataElementValidity (xml data) {
+public function isDataElementValid (xml data) (boolean isDataElementValid, error err) {
+    isDataElementValid = true;
+    err = null;
     // Check whether the <data> element entered is valid.
     if (data.isEmpty()) {
-        throw generateError("the <data> element cannot be empty");
-    }
-
-    if (!data.isSingleton()) {
-        throw generateError("the <data> element must be a single root element");
-    }
-
-    if (data.getItemType() != "element") {
-        throw generateError("the data input should be of 'element' type");
-    }
-
-    if (data.getElementName() != "data") {
-        throw generateError("the data input element should have a <data> root tag");
-    }
-
-    xml children = data.strip().children().elements();
-    xml childrenCopy = children.copy();
-    int i = 0;
-    int c = 1;
-    while (i < lengthof children - 1) {
-        while (c < lengthof childrenCopy) {
-            if (children[i].getElementName() == childrenCopy[c].getElementName()) {
-                throw generateError("duplicate element <" + children[i].getElementName() + "> found in the <data> element");
+        isDataElementValid = false;
+        err = generateError("the <data> element cannot be empty");
+    } else if (!data.isSingleton()) {
+        isDataElementValid = false;
+        err = generateError("the <data> element must be a single root element");
+    } else if (data.getItemType() != "element") {
+        isDataElementValid = false;
+        err = generateError("the data input should be of 'element' type");
+    } else if (data.getElementName() != "data") {
+        isDataElementValid = false;
+        err = generateError("the data input element should have a <data> root tag");
+    } else {
+        xml children = data.strip().children().elements();
+        xml childrenCopy = children.copy();
+        int i = 0;
+        int c = 1;
+        while (i < lengthof children - 1) {
+            while (c < lengthof childrenCopy) {
+                if (children[i].getElementName() == childrenCopy[c].getElementName()) {
+                    isDataElementValid = false;
+                    err = generateError("duplicate element <"
+                                        + children[i].getElementName() + "> found in the <data> element");
+                }
+                c = c + 1;
             }
-            c = c + 1;
+            i = i + 1;
         }
-        i = i + 1;
     }
+
+    return isDataElementValid, err;
 }
