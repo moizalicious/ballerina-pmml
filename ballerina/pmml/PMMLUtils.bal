@@ -1,7 +1,7 @@
 package ballerina.pmml;
 
 public function isValid (xml pmml) (boolean isValid, error err) {
-
+    // Checks whether the given xml argument has a valid <PMML> element.
     if (pmml.isEmpty()) {
         // Check whether the pmml parameter is empty.
         isValid = false;
@@ -35,9 +35,10 @@ public function isValid (xml pmml) (boolean isValid, error err) {
 }
 
 public function isPredictable (xml pmml) (boolean isPredictable, error err) {
-    var valid, e = isValid(pmml);
+    // Checks whether the given <PMML> element can be predictable using the API.
+    var valid, invalidPMMLError = isValid(pmml);
     if (!valid) {
-        return valid, e;
+        return valid, invalidPMMLError;
     }
 
     xmlns "http://www.dmg.org/PMML-4_2" as ns;
@@ -49,19 +50,19 @@ public function isPredictable (xml pmml) (boolean isPredictable, error err) {
             isPredictable = true;
             err = null;
         } else {
-            isPredictable  = false;
-            err = generateError("invorrect namespace, "
-                                + "please use \"http://www.dmg.org/PMML-4_2\" standard");
+            isPredictable = false;
+            err = generateError("incorrect namespace, "
+                                + "please use \"http://www.dmg.org/PMML-4_2\" as standard");
         }
     } else {
         isPredictable = false;
-        err = generateError("only version 4.2 is currently supported");
+        err = generateError("only PMML version 4.2 is currently supported");
     }
-
     return isPredictable, err;
 }
 
 function hasChildElement (xml x, string elementName) (boolean) {
+    // Checks whether a given xml argument has child element of name `elementName`.
     xml element = x.selectChildren(elementName);
     if (!element.isEmpty()) {
         return true;
@@ -71,6 +72,7 @@ function hasChildElement (xml x, string elementName) (boolean) {
 }
 
 function hasValidModelType (xml pmml) (boolean) {
+    // Checks whether the given <PMML> element has a valid ML model element or not.
     int index = 0;
     while (index < lengthof models) {
         if (hasChildElement(pmml, models[index])) {
@@ -82,11 +84,16 @@ function hasValidModelType (xml pmml) (boolean) {
 }
 
 public function getVersion (xml pmml) (float) {
-    var valid, err = isValid(pmml);
+    // Gets the version attribute of the given <PMML> element.
+    var valid, invalidPMMLError = isValid(pmml);
     if (!valid) {
-        throw err;
+        throw invalidPMMLError;
     }
 
-    var pmmlVersion, _ = <float>pmml@["version"];
+    var pmmlVersion, typeConversionError = <float>pmml@["version"];
+    if (typeConversionError != null) {
+        throw typeConversionError;
+    }
+
     return pmmlVersion;
 }

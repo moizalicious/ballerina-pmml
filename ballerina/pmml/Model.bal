@@ -1,6 +1,8 @@
 package ballerina.pmml;
 
-public function executeModel (xml pmml, xml data) (any) {
+public function predict (xml pmml, xml data) (any) {
+    // Based on the ML model defined in the <PMML> element,
+    // will be redirected to the necessary function.
     pmml = pmml.strip();
     data = data.strip();
 
@@ -10,12 +12,11 @@ public function executeModel (xml pmml, xml data) (any) {
     }
 
     any result;
-
     string modelType = getModelType(pmml);
     if (modelType.contains("GeneralRegressionModel")) {
         throw generateError("the model " + modelType + " is currently not supported");
     } else if (modelType.contains("RegressionModel")) {
-        result = executeRegressionModel(pmml, data);
+        result = predictRegressionModel(pmml, data);
     } else {
         throw generateError("the model " + modelType + " is currently not supported");
     }
@@ -24,25 +25,33 @@ public function executeModel (xml pmml, xml data) (any) {
 }
 
 function getModelElement (xml pmml) (xml) {
+    // Gets the child element of the <PMML> element which defines the ML model it is using.
     xml modelElement;
     int index = 0;
     boolean modelFound = false;
+    int modelFoundCount = 0;
     while (index < lengthof models) {
-        // TODO if there are 2 or more model elements, an error should be shown.
-        if (hasChildElement(pmml, models[index])) {
-            modelFound = true;
+        if (hasChildElement(pmml, models[index]) && !modelFound) {
             modelElement = pmml.selectChildren(models[index]);
-            break;
+            modelFound = true;
+            modelFoundCount = modelFoundCount + 1;
+            if (!modelElement.isSingleton()) {
+                throw generateError("there can be only one model element in the PMML");
+            }
         }
         index = index + 1;
     }
-    if (!modelFound) {
-        throw generateError("no valid model available in the pmml");
+    if (modelFoundCount > 1) {
+        throw generateError("there can be only one model element in the PMML");
+    } else if (!modelFound) {
+        throw generateError("no valid ML model found in the pmml");
     }
+
     return modelElement;
 }
 
 public function getModelType (xml pmml) (string) {
+    // Gets the type of the ML model the <PMML> element is using.
     var valid, err = isValid(pmml);
     if (!valid) {
         throw err;

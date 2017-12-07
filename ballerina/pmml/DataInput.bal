@@ -1,9 +1,9 @@
 package ballerina.pmml;
 
 public function isDataElementValid (xml data) (boolean isDataElementValid, error err) {
+    // Checks whether the <data> element given by the user is valid.
     isDataElementValid = true;
     err = null;
-    // Check whether the <data> element entered is valid.
     if (data.isEmpty()) {
         isDataElementValid = false;
         err = generateError("the <data> element cannot be empty");

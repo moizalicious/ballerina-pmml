@@ -2,42 +2,45 @@ package ballerina.pmml;
 
 import ballerina.math;
 
-function executeRegressionModel (xml pmml, xml data) (any) {
-    any result;
+function predictRegressionModel (xml pmml, xml data) (any) {
+    // Handles all ML models of <RegressionModel> type.
 
     // Check if the argument is a valid PMML element.
-    var predictable, err = isPredictable(pmml);
+    var predictable, unusablePMMLError = isPredictable(pmml);
     if (!predictable) {
-        throw err;
+        throw unusablePMMLError;
     }
 
     // Check if the data element is a valid one.
-    var dataElementValid, err = isDataElementValid(data);
+    var dataElementValid, invalidDataElementError = isDataElementValid(data);
     if (!dataElementValid) {
-        throw err;
+        throw invalidDataElementError;
     }
+
+    any result;
 
     xml modelElement = getModelElement(pmml);
     string functionName = modelElement@["functionName"];
     if (functionName == "regression") {
         if ((lengthof getRegressionTableElements(getModelElement(pmml)) == 1)) {
-            result = executeLinearRegression(pmml, data);
+            result = predictLinearRegression(pmml, data);
         } else if ((lengthof getRegressionTableElements(getModelElement(pmml)) == 2)) {
-            result = executeLogisticRegression(pmml, data);
+            result = predictLogisticRegression(pmml, data);
         } else {
             throw generateError("more than 2 regression table elements found, use classification instead");
         }
     } else if (functionName == "classification") {
-        result = executeClassification(pmml, data);
+        result = predictClassification(pmml, data);
     } else {
         throw generateError("no valid 'functionName' attribute found");
     }
     return result;
 }
 
-function executeLinearRegression (xml pmml, xml data) (any) {
+function predictLinearRegression (xml pmml, xml data) (any) {
+    // Executes linear regression in the <PMML> element.
     xml regressionTable = getRegressionTableElements(getModelElement(pmml));
-    float output = getYValue(regressionTable, data);
+    float output = getDependentValue(regressionTable, data);
 
     string targetName;
     xml miningFields = getMiningFieldElements(
@@ -71,11 +74,11 @@ function executeLinearRegression (xml pmml, xml data) (any) {
         }
         i = i + 1;
     }
-
     return output;
 }
 
-function executeLogisticRegression (xml pmml, xml data) (float) {
+function predictLogisticRegression (xml pmml, xml data) (float) {
+    // Execute logistic regression in the <PMML> element.
     xml regressionTables = getRegressionTableElements(getModelElement(pmml));
     string normalizationMethod = getModelElement(pmml)@["normalizationMethod"];
 
@@ -89,7 +92,7 @@ function executeLogisticRegression (xml pmml, xml data) (float) {
     int i = 0;
     while (i < lengthof regressionTables) {
         xml regressionTable = regressionTables[i];
-        values[i] = getYValue(regressionTable, data);
+        values[i] = getDependentValue(regressionTable, data);
         sumOfValues = sumOfValues + values[i];
         sumOfValuesExp = sumOfValuesExp + math:exp(values[i]);
         i = i + 1;
@@ -121,7 +124,9 @@ function executeLogisticRegression (xml pmml, xml data) (float) {
     return probability;
 }
 
-function executeClassification (xml pmml, xml data) (string) {
+function predictClassification (xml pmml, xml data) (string) {
+    // Execute classification in the <PMML> element.
+
     // Get the normalization method.
     string normalizationMethod = getModelElement(pmml)@["normalizationMethod"];
 
@@ -133,7 +138,7 @@ function executeClassification (xml pmml, xml data) (string) {
     int i = 0;
     while (i < lengthof regressionTables) {
         xml regressionTable = regressionTables[i];
-        values[i] = getYValue(regressionTable, data);
+        values[i] = getDependentValue(regressionTable, data);
         sumOfValues = sumOfValues + values[i];
         sumOfValuesExp = sumOfValuesExp + math:exp(values[i]);
         i = i + 1;
@@ -178,16 +183,24 @@ function executeClassification (xml pmml, xml data) (string) {
 }
 
 function getRegressionTableElements (xml modelElement) (xml) {
+    // Gets the <RegressionTable> elements from the respective ML model element.
     xml regressionTableElement = modelElement.selectChildren("RegressionTable");
     if (regressionTableElement.isEmpty()) {
         throw generateError("no regression table element found");
     }
+
     return regressionTableElement;
 }
 
-function getYValue (xml regressionTable, xml data) (float) {
-    var intercept, _ = <float>regressionTable@["intercept"];
-    if (regressionTable.strip().children().isEmpty()) {
+function getDependentValue (xml regressionTable, xml data) (float) {
+    // Calculates the dependent values using a single <RegressionTable>
+    // element and the independent values provided by the user.
+
+    var intercept, typeConversionError = <float>regressionTable@["intercept"];
+    if (typeConversionError != null) {
+        throw typeConversionError;
+    }
+    if (regressionTable.children().isEmpty()) {
         return intercept;
     }
 
@@ -199,14 +212,24 @@ function getYValue (xml regressionTable, xml data) (float) {
         string elementName = predictor.getElementName();
         if (elementName.contains("NumericPredictor")) {
             string name = predictor@["name"];
-            var exponent, _ = <int>predictor@["exponent"];
+            var exponent, exponentConversionError = <int>predictor@["exponent"];
+            if (exponentConversionError != null) {
+                throw exponentConversionError;
+            }
             if (exponent == 0) {
                 exponent = 1;
             }
-            var coefficient, _ = <float>predictor@["coefficient"];
+            var coefficient, coefficientConversionError = <float>predictor@["coefficient"];
+            if (coefficientConversionError != null) {
+                throw coefficientConversionError;
+            }
             var independent = 0.0;
+            TypeConversionError independentConversionError;
             if (hasChildElement(data, name)) {
-                independent, _ = <float>data.selectChildren(name).getTextValue();
+                independent, independentConversionError = <float>data.selectChildren(name).getTextValue();
+                if (independentConversionError != null) {
+                    throw independentConversionError;
+                }
             } else {
                 throw generateError(name + " element was not found in the <data> element");
             }
@@ -214,7 +237,10 @@ function getYValue (xml regressionTable, xml data) (float) {
         } else if (elementName.contains("CategoricalPredictor")) {
             string name = predictor@["name"];
             string value = predictor@["value"];
-            var coefficient, _ = <float>predictor@["coefficient"];
+            var coefficient, coefficientConversionError = <float>predictor@["coefficient"];
+            if (coefficientConversionError != null) {
+                throw coefficientConversionError;
+            }
 
             if (!hasChildElement(data, name)) {
                 throw generateError(name + " element was not found in the data element");
@@ -225,7 +251,10 @@ function getYValue (xml regressionTable, xml data) (float) {
                 output = output + coefficient;
             }
         } else if (elementName.contains("PredictorTerm")) {
-            var coefficient, _ = <float>predictor@["coefficient"];
+            var coefficient, coefficientConversionError = <float>predictor@["coefficient"];
+            if (coefficientConversionError != null) {
+                throw coefficientConversionError;
+            }
             xml fieldRefs = predictor.children().elements();
             float fieldRefTotalCoefficient = 1;
 
@@ -238,18 +267,20 @@ function getYValue (xml regressionTable, xml data) (float) {
                     throw generateError(field + "element was not found in the <data> element");
                 } else {
                     xml independentXML = data.selectChildren(field);
-                    var independent, _ = <float>independentXML.getTextValue();
+                    var independent, independentConversionError = <float>independentXML.getTextValue();
+                    if (independentConversionError != null) {
+                        throw generateError("categorical values in pmml <PredictorTerm> elements are currently not available");
+                    }
                     fieldRefTotalCoefficient = fieldRefTotalCoefficient * independent;
                 }
                 c = c + 1;
             }
-
             output = output + (coefficient * fieldRefTotalCoefficient);
-
         } else {
             throw generateError("invaid element: " + predictor.getElementName());
         }
         i = i + 1;
     }
+
     return output;
 }
