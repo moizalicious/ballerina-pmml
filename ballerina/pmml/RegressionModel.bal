@@ -214,10 +214,14 @@ function getDependentValue (xml regressionTable, xml data) (float) {
             string name = predictor@["name"];
             var exponent, exponentConversionError = <int>predictor@["exponent"];
             if (exponentConversionError != null) {
-                throw exponentConversionError;
+                if (exponentConversionError.msg == "'null' cannot be converted to 'int'") {
+                    exponent = 1;
+                } else {
+                    throw exponentConversionError;
+                }
             }
             if (exponent == 0) {
-                exponent = 1;
+                throw generateError("exponent cannot be 0");
             }
             var coefficient, coefficientConversionError = <float>predictor@["coefficient"];
             if (coefficientConversionError != null) {
