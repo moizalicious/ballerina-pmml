@@ -18,7 +18,6 @@ function predictRegressionModel (xml pmml, xml data) (any) {
     }
 
     any result;
-
     xml modelElement = getModelElement(pmml);
     string functionName = modelElement@["functionName"];
     if (functionName == "regression") {
@@ -34,6 +33,7 @@ function predictRegressionModel (xml pmml, xml data) (any) {
     } else {
         throw generateError("no valid 'functionName' attribute found");
     }
+
     return result;
 }
 
@@ -81,6 +81,9 @@ function predictLogisticRegression (xml pmml, xml data) (float) {
     // Execute logistic regression in the <PMML> element.
     xml regressionTables = getRegressionTableElements(getModelElement(pmml));
     string normalizationMethod = getModelElement(pmml)@["normalizationMethod"];
+    if (normalizationMethod == null) {
+        throw generateError("the 'normalizationMethod' attribute is not defined");
+    }
 
     if (!(lengthof regressionTables == 2)) {
         throw generateError("there should be 2 regression table elements for logistic regression");
@@ -129,6 +132,9 @@ function predictClassification (xml pmml, xml data) (string) {
 
     // Get the normalization method.
     string normalizationMethod = getModelElement(pmml)@["normalizationMethod"];
+    if (normalizationMethod == null) {
+        throw generateError("the 'normalizationMethod' is not defined");
+    }
 
     // Get the values from the regression table
     xml regressionTables = getRegressionTableElements(getModelElement(pmml));
@@ -212,6 +218,9 @@ function getDependentValue (xml regressionTable, xml data) (float) {
         string elementName = predictor.getElementName();
         if (elementName.contains("NumericPredictor")) {
             string name = predictor@["name"];
+            if (name == null) {
+                throw generateError("the 'name' attribute is not defined");
+            }
             var exponent, exponentConversionError = <int>predictor@["exponent"];
             if (exponentConversionError != null) {
                 if (exponentConversionError.msg == "'null' cannot be converted to 'int'") {
@@ -240,7 +249,13 @@ function getDependentValue (xml regressionTable, xml data) (float) {
             output = output + (coefficient * math:pow(independent, exponent));
         } else if (elementName.contains("CategoricalPredictor")) {
             string name = predictor@["name"];
+            if (name == null) {
+                throw generateError("the 'name' attribute is not defined");
+            }
             string value = predictor@["value"];
+            if (value == null) {
+                throw generateError("the 'value' attribute is not defined");
+            }
             var coefficient, coefficientConversionError = <float>predictor@["coefficient"];
             if (coefficientConversionError != null) {
                 throw coefficientConversionError;
@@ -266,6 +281,9 @@ function getDependentValue (xml regressionTable, xml data) (float) {
             while (c < lengthof fieldRefs) {
                 xml fieldRef = fieldRefs[c];
                 string field = fieldRef@["field"];
+                if (field == null) {
+                    throw generateError("the 'field' attribute is not defined");
+                }
 
                 if (!hasChildElement(data, field)) {
                     throw generateError(field + "element was not found in the <data> element");

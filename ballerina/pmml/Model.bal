@@ -3,14 +3,18 @@ package ballerina.pmml;
 public function predict (xml pmml, xml data) (any) {
     // Based on the ML model defined in the <PMML> element,
     // will be redirected to the necessary function.
+
+    // Strip the elements of any whitespaces.
     pmml = pmml.strip();
     data = data.strip();
 
+    // Check if the <PMML> element is usable in this API.
     var predictable, err = isPredictable(pmml);
     if (!predictable) {
         throw err;
     }
 
+    // Gets the model type and based on that gets redirected to the specific function.
     any result;
     string modelType = getModelType(pmml);
     if (modelType.contains("GeneralRegressionModel")) {
@@ -41,9 +45,12 @@ function getModelElement (xml pmml) (xml) {
         }
         index = index + 1;
     }
+
     if (modelFoundCount > 1) {
+        // If there are multiple model elements of the same type.
         throw generateError("there can be only one model element in the PMML");
     } else if (!modelFound) {
+        // If no valid model element is found.
         throw generateError("no valid ML model found in the pmml");
     }
 
@@ -52,6 +59,8 @@ function getModelElement (xml pmml) (xml) {
 
 public function getModelType (xml pmml) (string) {
     // Gets the type of the ML model the <PMML> element is using.
+
+    // Checks whether the pmml parameter has a valid argument.
     var valid, err = isValid(pmml);
     if (!valid) {
         throw err;

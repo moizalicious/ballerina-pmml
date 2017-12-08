@@ -1,5 +1,8 @@
 package ballerina.pmml;
 
+import ballerina.file;
+import ballerina.io;
+
 public function isValid (xml pmml) (boolean isValid, error err) {
     // Checks whether the given xml argument has a valid <PMML> element.
     if (pmml.isEmpty()) {
@@ -36,6 +39,8 @@ public function isValid (xml pmml) (boolean isValid, error err) {
 
 public function isPredictable (xml pmml) (boolean isPredictable, error err) {
     // Checks whether the given <PMML> element can be predictable using the API.
+
+    // Checks if the <PMML> element is a valid one.
     var valid, invalidPMMLError = isValid(pmml);
     if (!valid) {
         return valid, invalidPMMLError;
@@ -44,8 +49,9 @@ public function isPredictable (xml pmml) (boolean isPredictable, error err) {
     xmlns "http://www.dmg.org/PMML-4_2" as ns;
     string pmmlVersion = pmml@["version"];
     string elementName = pmml.getElementName();
-    // Check whether the XML is a valid PMML element.
+    // Checks whether the version number is 4.2.
     if (pmmlVersion == "4.2") {
+        // Checks whether the element name is {http://www.dmg.org/PMML-4_2}PMML.
         if (elementName == ns:PMML) {
             isPredictable = true;
             err = null;
@@ -58,6 +64,7 @@ public function isPredictable (xml pmml) (boolean isPredictable, error err) {
         isPredictable = false;
         err = generateError("only PMML version 4.2 is currently supported");
     }
+
     return isPredictable, err;
 }
 
@@ -85,6 +92,8 @@ function hasValidModelType (xml pmml) (boolean) {
 
 public function getVersion (xml pmml) (float) {
     // Gets the version attribute of the given <PMML> element.
+
+    // Checks whether the given <PMML> element is a valid one.
     var valid, invalidPMMLError = isValid(pmml);
     if (!valid) {
         throw invalidPMMLError;
@@ -96,4 +105,19 @@ public function getVersion (xml pmml) (float) {
     }
 
     return pmmlVersion;
+}
+
+public function readXMLFromFile (string filePath) (xml) {
+    // Reads data from a file and converts it to an XML object.
+    file:File file = {path:filePath};
+    io:ByteChannel byteChannel = file.openChannel("r");
+    blob bytes;
+    int numberOfBytes;
+    bytes, numberOfBytes = byteChannel.readBytes(1000000);
+    string s = bytes.toString("UTF-8");
+    var x, typeConversionError = <xml>s.trim();
+    if (typeConversionError != null) {
+        throw typeConversionError;
+    }
+    return x;
 }
