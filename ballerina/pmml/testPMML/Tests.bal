@@ -1,19 +1,11 @@
 package ballerina.pmml.testPMML;
 
+import ballerina.test;
 import ballerina.pmml;
 import ballerina.file;
 import ballerina.io;
 
-public function runAllTests() {
-    // Runs all the test functions.
-    testLinearRegression();
-    testPolynomialRegression();
-    testLogisticRegression();
-    testClassification();
-    testInteractionTerms();
-}
-
-public function testLinearRegression() {
+function testLinearRegression() {
     xml pmml = readXMLFromFile("LinearRegression.pmml");
     xml data = xml `<data>
                         <age>19</age>
@@ -25,14 +17,10 @@ public function testLinearRegression() {
         throw resultConversionError;
     }
     int expected = 508;
-    if (result == expected) {
-        println(result);
-    } else {
-        throw generateError("actual result (" + result + ") does not match expected result (" + expected + ")");
-    }
+    test:assertIntEquals(result, expected, "LinearRegression.pmml failed to execute");
 }
 
-public function testPolynomialRegression() {
+function testPolynomialRegression() {
     xml pmml = readXMLFromFile("PolynomialRegression.pmml");
     xml data = xml `<data>
                         <salary>20000</salary>
@@ -43,14 +31,10 @@ public function testPolynomialRegression() {
         throw resultConversionError;
     }
     int expected = 2070;
-    if (result == expected) {
-        println(result);
-    } else {
-        throw generateError("actual result (" + result + ") does not match expected result (" + expected + ")");
-    }
+    test:assertIntEquals(result, expected, "PolynomialRegression.pmml failed to execute");
 }
 
-public function testLogisticRegression() {
+function testLogisticRegression() {
     xml pmml = readXMLFromFile("LogisticRegression.pmml");
     xml data = xml `<data>
                         <x1>2.7</x1>
@@ -61,14 +45,10 @@ public function testLogisticRegression() {
         throw resultConversionError;
     }
     float expected = 0.03715760747297868;
-    if (result == expected) {
-        println(result);
-    } else {
-        throw generateError("actual result (" + result + ") does not match expected result (" + expected + ")");
-    }
+    test:assertFloatEquals(result, expected, "LogisticRegression.pmml failed to execute");
 }
 
-public function testClassification() {
+function testClassification() {
     xml pmml = readXMLFromFile("Classification.pmml");
     xml data = xml `<data>
                         <age>19</age>
@@ -81,14 +61,10 @@ public function testClassification() {
         throw resultConversionError;
     }
     string expected = "professional";
-    if (result == expected) {
-        println(result);
-    } else {
-        throw generateError("actual result (" + result + ") does not match expected result (" + expected + ")");
-    }
+    test:assertStringEquals(result, expected, "Classification.pmml failed to execute");
 }
 
-public function testInteractionTerms() {
+function testInteractionTerms() {
     xml pmml = readXMLFromFile("InteractionTerms.pmml");
     xml data = xml `<data>
                         <sex>male</sex>
@@ -100,11 +76,7 @@ public function testInteractionTerms() {
         throw resultConversionError;
     }
     float expected = -34.575;
-    if (result == expected) {
-        println(result);
-    } else {
-        throw generateError("actual result (" + result + ") does not match expected result (" + expected + ")");
-    }
+    test:assertFloatEquals(result, expected, "InteractionTerms.pmml failed to execute");
 }
 
 function generateError(string msg) (error) {
