@@ -6,14 +6,14 @@ import ballerina.file;
 import ballerina.io;
 
 function testIsValid () {
-    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/LinearRegression.pmml");
+    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/LinearRegression.pmml");
     var isValid, _ = pmml:isValid(pmml);
     println(isValid);
     test:assertTrue(isValid, "LinearRegression.pmml is not valid");
 }
 
 function testIsPredictable () {
-    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/LinearRegression.pmml");
+    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/LinearRegression.pmml");
     var isPreditable, _ = pmml:isPredictable(pmml);
     println(isPreditable);
     test:assertTrue(isPreditable, "LinearRegression.pmml is not predictable");
@@ -30,7 +30,7 @@ function testIsDataElementValid () {
 }
 
 function testLinearRegression () {
-    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/LinearRegression.pmml");
+    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/LinearRegression.pmml");
     xml data = xml `<data>
                         <age>19</age>
                         <salary>20000</salary>
@@ -46,7 +46,7 @@ function testLinearRegression () {
 }
 
 function testPolynomialRegression () {
-    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/PolynomialRegression.pmml");
+    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/PolynomialRegression.pmml");
     xml data = xml `<data>
                         <salary>20000</salary>
                         <car_location>carpark</car_location>
@@ -61,7 +61,7 @@ function testPolynomialRegression () {
 }
 
 function testLogisticRegression () {
-    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/LogisticRegression.pmml");
+    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/LogisticRegression.pmml");
     xml data = xml `<data>
                         <x1>2.7</x1>
                         <x2>2.2</x2>
@@ -76,7 +76,7 @@ function testLogisticRegression () {
 }
 
 function testClassification () {
-    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/Classification.pmml");
+    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/Classification.pmml");
     xml data = xml `<data>
                         <age>19</age>
                         <work>8</work>
@@ -93,7 +93,7 @@ function testClassification () {
 }
 
 function testInteractionTerms () {
-    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/InteractionTerms.pmml");
+    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/InteractionTerms.pmml");
     xml data = xml `<data>
                         <sex>male</sex>
                         <age>19</age>
