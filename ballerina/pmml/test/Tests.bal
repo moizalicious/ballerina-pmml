@@ -2,21 +2,25 @@ package ballerina.pmml.test;
 
 import ballerina.test;
 import ballerina.pmml;
-import ballerina.file;
-import ballerina.io;
 
 function testIsValid () {
     xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/LinearRegression.pmml");
-    var isValid, _ = pmml:isValid(pmml);
+    var isValid, invalidPMMLError = pmml:isValid(pmml);
     println(isValid);
-    test:assertTrue(isValid, "LinearRegression.pmml is not valid");
+    if (invalidPMMLError != null) {
+        throw invalidPMMLError;
+    }
+    test:assertTrue(isValid, "'LinearRegression.pmml' is not valid: ");
 }
 
 function testIsPredictable () {
     xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/LinearRegression.pmml");
-    var isPreditable, _ = pmml:isPredictable(pmml);
-    println(isPreditable);
-    test:assertTrue(isPreditable, "LinearRegression.pmml is not predictable");
+    var isPredictable, unpredictablePMMLError = pmml:isPredictable(pmml);
+    println(isPredictable);
+    if (unpredictablePMMLError != null) {
+        throw unpredictablePMMLError;
+    }
+    test:assertTrue(isPredictable, "'LinearRegression.pmml' is not predictable: ");
 }
 
 function testIsDataElementValid () {
@@ -24,9 +28,12 @@ function testIsDataElementValid () {
                         <e1></e1>
                         <e2></e2>
                     </data>`;
-    var isDataElementValid, _ = pmml:isDataElementValid(data);
+    var isDataElementValid, invalidDataElementError = pmml:isDataElementValid(data);
     println(isDataElementValid);
-    test:assertTrue(isDataElementValid, "valid data element asserted false");
+    if (invalidDataElementError != null) {
+        throw invalidDataElementError;
+    }
+    test:assertTrue(isDataElementValid, "valid data element asserted false: ");
 }
 
 function testLinearRegression () {
@@ -42,7 +49,7 @@ function testLinearRegression () {
     }
     int expected = 508;
     println(result);
-    test:assertIntEquals(result, expected, "LinearRegression.pmml failed to execute");
+    test:assertIntEquals(result, expected, "'LinearRegression.pmml' failed to execute: ");
 }
 
 function testPolynomialRegression () {
@@ -57,7 +64,7 @@ function testPolynomialRegression () {
     }
     int expected = 2070;
     println(result);
-    test:assertIntEquals(result, expected, "PolynomialRegression.pmml failed to execute");
+    test:assertIntEquals(result, expected, "'PolynomialRegression.pmml' failed to execute: ");
 }
 
 function testLogisticRegression () {
@@ -72,7 +79,7 @@ function testLogisticRegression () {
     }
     float expected = 0.03715760747297868;
     println(result);
-    test:assertFloatEquals(result, expected, "LogisticRegression.pmml failed to execute");
+    test:assertFloatEquals(result, expected, "'LogisticRegression.pmml' failed to execute: ");
 }
 
 function testClassification () {
@@ -89,7 +96,7 @@ function testClassification () {
     }
     string expected = "professional";
     println(result);
-    test:assertStringEquals(result, expected, "Classification.pmml failed to execute");
+    test:assertStringEquals(result, expected, "'Classification.pmml' failed to execute: ");
 }
 
 function testInteractionTerms () {
@@ -105,5 +112,72 @@ function testInteractionTerms () {
     }
     float expected = -33.625;
     println(result);
-    test:assertFloatEquals(result, expected, "InteractionTerms.pmml failed to execute");
+    test:assertFloatEquals(result, expected, "'InteractionTerms.pmml' failed to execute: ");
+}
+
+function testRegressionIrisSetosa () {
+    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/RegressionIris.pmml");
+    xml data = xml `<data>
+                    <Sepal.Length>5.1</Sepal.Length>
+                    <Sepal.Width>3.7</Sepal.Width>
+                    <Petal.Length>1.5</Petal.Length>
+                    <Petal.Width>0.4</Petal.Width>
+                </data>`;
+    var result, resultConversionError = (string)pmml:predict(pmml, data);
+    if (resultConversionError != null) {
+        throw resultConversionError;
+    }
+    string expected = "setosa";
+    println(result);
+    test:assertStringEquals(result, expected, "'RegressionIris.pmml' failed to execute: ");
+}
+
+function testRegressionIrisVersicolor () {
+    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/RegressionIris.pmml");
+    xml data = xml `<data>
+                    <Sepal.Length>5.5</Sepal.Length>
+                    <Sepal.Width>2.4</Sepal.Width>
+                    <Petal.Length>3.8</Petal.Length>
+                    <Petal.Width>1.1</Petal.Width>
+                </data>`;
+    var result, resultConversionError = (string)pmml:predict(pmml, data);
+    if (resultConversionError != null) {
+        throw resultConversionError;
+    }
+    string expected = "versicolor";
+    println(result);
+    test:assertStringEquals(result, expected, "'RegressionIris.pmml' failed to execute: ");
+}
+
+function testRegressionIrisVirginica () {
+    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/RegressionIris.pmml");
+    xml data = xml `<data>
+                    <Sepal.Length>7.2</Sepal.Length>
+                    <Sepal.Width>3.2</Sepal.Width>
+                    <Petal.Length>6.0</Petal.Length>
+                    <Petal.Width>1.8</Petal.Width>
+                </data>`;
+    var result, resultConversionError = (string)pmml:predict(pmml, data);
+    if (resultConversionError != null) {
+        throw resultConversionError;
+    }
+    string expected = "virginica";
+    println(result);
+    test:assertStringEquals(result, expected, "'RegressionIris.pmml' failed to execute: ");
+}
+
+function testRegressionOzone () {
+    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/RegressionOzone.pmml");
+    xml data = xml `<data>
+                    <temp>30</temp>
+                    <ibh>1.21</ibh>
+                    <ibt>0.032</ibt>
+                </data>`;
+    var result, resultConversionError = (float)pmml:predict(pmml, data);
+    if (resultConversionError != null) {
+        throw resultConversionError;
+    }
+    float expected = 3.683621024442372;
+    println(result);
+    test:assertFloatEquals(result, expected, "'RegressionOzone.pmml' failed to execute: ");
 }

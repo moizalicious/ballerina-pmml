@@ -18,7 +18,7 @@
         </MiningSchema>
         <RegressionTable intercept="2.1">
             <CategoricalPredictor name="sex" value="male" coefficient="-20.525"/>
-            <CategoricalPredictor name="sex" value="female" coefficient="-19.5"/>
+            <CategoricalPredictor name="sex" value="male" coefficient="0"/>
             <PredictorTerm coefficient="-0.1">
                 <FieldRef field="age"/>
                 <FieldRef field="work"/>
