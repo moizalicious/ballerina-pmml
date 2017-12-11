@@ -3,12 +3,12 @@
 
 ### Contents
 1. [Introduction](#introduction)
-2. [Downloading The API](#download)
-3. [Using The API](#using)
-4. [Making Changes](#changes)
-5. [Additional Information](#additional)
+2. [Downloading The API](#downloading-the-api)
+3. [Using The API](#using-the-api)
+4. [Making Changes](#making-changes)
+5. [Additional Information](#additional-information)
 
-## <a name="introduction"> Introduction </a>
+## Introduction
 **This is a PMML API (proof-of-concept) written to test the limits of Ballerina's built-in XML library.**
 
 Ballerina is a general purpose, concurrent and strongly typed programming language offered by [WSO2](https://wso2.com/) with both textual and graphical syntaxes, optimized for integration.
@@ -21,9 +21,9 @@ This API does not fully support all features of PMML nor all versions. The API i
 
 All of the above machine learning models can be defined by the `<RegressionModel>` element in PMML.
 
-## <a name="download"> Downloading The API </a>
+## Downloading The API
 To download the API you can either clone the repository to your local machine by typing the following git command,
-> ~$git clone https://github.com/moizalicious/ballerina-pmml
+> ~$ git clone https://github.com/moizalicious/ballerina-pmml
 
 Or you can download the source files by clicking on one of the following links,
 * [zip (v1.0-alpha)](https://github.com/moizalicious/ballerina-pmml/archive/v1.0-alpha.zip)
@@ -31,8 +31,8 @@ Or you can download the source files by clicking on one of the following links,
 
 Extract and open the file, then copy the `ballerina` folder to your own Ballerina project. Once the folder is added you can use the PMML API in your project by importing the PMML package to your code by typing `import ballerina.pmml;`
 
-## <a name="using"> Using The API </a>
-The following XML is a classification model that is written in PMML for the iris data set.
+## Using The API
+The following XML is a classification model that is written in PMML for the iris data set. We want to use this PMML file to predict which category a flower would come in (setosa, versicolor or verginica) based on the flowers petal width, petal length, sepal width & sepal length.
 ```xml
 <PMML version="4.2" xmlns="http://www.dmg.org/PMML-4_2">
     <Header copyright="Copyright (c) 2013 Vfed" description="Multinomial Logistic Model">
@@ -74,7 +74,6 @@ The following XML is a classification model that is written in PMML for the iris
         <RegressionTable intercept="0.0" targetCategory="setosa"/>
     </RegressionModel>
 </PMML>
-
 ```
 Click [here](https://raw.githubusercontent.com/moizalicious/ballerina-pmml/master/ballerina/pmml/test/res/RegressionIris.pmml) to download the above PMML file.
 
@@ -83,7 +82,7 @@ The following code describes how to use the API,
 import ballerina.pmml;
 
 function main (string[]args) {
-    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/RegressionIris.pmml");
+    xml pmml = pmml:readXMLFromFile("RegressionIris.pmml");
     xml data = xml `<data>
                         <Sepal.Length>5.1</Sepal.Length>
                         <Sepal.Width>3.7</Sepal.Width>
@@ -94,14 +93,12 @@ function main (string[]args) {
     if (resultConversionError != null) {
         throw resultConversionError;
     }
-    string expected = "setosa";
     println(result);
 }
 ```
 
-## <a name="changes"> Making Changes </a>
-Information on contributing to the API should be added here.
+## Making Changes
+If you would like to contribute to this repository feel free to do so. Check out the [Developer Guide](addLinkHere) to learn more about the source and the internal structure of the API.
 
-## <a name="additional"> Additional Information </a>
+## Additional Information
 Mostly about what features the API does not have. Also a link to the developer documentation.
-
