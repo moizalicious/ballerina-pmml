@@ -36,6 +36,18 @@ function testIsDataElementValid () {
     test:assertTrue(isDataElementValid, "valid data element asserted false: ");
 }
 
+function testGetModelType() {
+    // TODO complete
+}
+
+function testGetVersion() {
+    // TODO complete
+}
+
+function testReadXMLFromFile() {
+    // TODO complete
+}
+
 function testLinearRegression () {
     xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/LinearRegression.pmml");
     xml data = xml `<data>
