@@ -31,8 +31,30 @@ Or you can download the source files by clicking on one of the following links,
 
 Extract and open the file, then copy the `ballerina` folder to your own Ballerina project. Once the folder is added you can use the PMML API in your project by importing the PMML package to your code by typing `import ballerina.pmml;`
 
+**Add a screenshot here**
+
 ## Using The API
-The following XML is a classification model that is written in PMML for the iris data set. We want to use this PMML file to predict which category a flower would come in (setosa, versicolor or verginica) based on the flowers petal width, petal length, sepal width & sepal length.
+To predict values using this API with a machine learning model, we need two things,
+1. The PMML file of that respective machine learning model.
+2. The independent data that is to be fed into the machine learning model to predict an outcome.
+
+Both the PMML file and the independent values should be Ballerina `xml` objects. The PMML XML object must have the `<PMML>` element as the root element and should follow the format of PMML version 4.2.
+
+The independent values must be added in the following format,
+```xml
+<data>
+    <value1></value1>
+    <value2></value2>
+    ...
+    ...
+</data>
+```
+Where the root element must always be `<data>` and the child elements must have the same names that are defined in the attributes of the PMML element's data dictionary (besides the target element).
+
+Once you have these two XML objects you have to add them as arguments to the function `pmml:predict(xml pmml, xml data);` to obtain the predicted value. The outcome is returned as a Ballerina `any` typed object.
+
+### Example For Classification Using The Iris Data Set
+The following XML is a trained classification model that is written in PMML for the iris data set. Using this machine learning model we can predict which category a flower would come in (setosa, versicolor or verginica) based on the flower's petal width, petal length, sepal width & sepal length. Download the following code and save it as `RegressionIris.pmml` in your Ballerina project.
 ```xml
 <PMML version="4.2" xmlns="http://www.dmg.org/PMML-4_2">
     <Header copyright="Copyright (c) 2013 Vfed" description="Multinomial Logistic Model">
@@ -75,7 +97,18 @@ The following XML is a classification model that is written in PMML for the iris
     </RegressionModel>
 </PMML>
 ```
-Click [here](https://raw.githubusercontent.com/moizalicious/ballerina-pmml/master/ballerina/pmml/test/res/RegressionIris.pmml) to download the above PMML file.
+**Click [here](https://raw.githubusercontent.com/moizalicious/ballerina-pmml/master/ballerina/pmml/test/res/RegressionIris.pmml) to download the above PMML file.**
+
+The PMML file has 5 `<DataField>` elements,
+* Species
+* Sepal.Length
+* Sepal.Width
+* Petal.Length
+* Petal.Width
+
+Since Species is the target that we are trying to predict (as defined by the `usageType` attribute in the `<MiningSchema>` element), we do not add any values for that.
+
+Some sample values for the iris data set can be found [here](https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data) which can be used as inputs.
 
 The following code describes how to use the API,
 ```ballerina
@@ -89,16 +122,13 @@ function main (string[]args) {
                         <Petal.Length>1.5</Petal.Length>
                         <Petal.Width>0.4</Petal.Width>
                     </data>`;
-    var result, resultConversionError = (string)pmml:predict(pmml, data);
-    if (resultConversionError != null) {
-        throw resultConversionError;
-    }
+    any result = pmml:predict(pmml, data);                
     println(result);
 }
 ```
 
 ## Making Changes
-If you would like to contribute to this repository feel free to do so. Check out the [Developer Guide](addLinkHere) to learn more about the source and the internal structure of the API.
+If you would like to contribute to this repository feel free to do so. Check out the [Developer Guide](https://github.com/moizalicious/ballerina-pmml/blob/master/docs/dev-guide.md) to learn more about the source and the internal structure of the API.
 
 ## Additional Information
 Mostly about what features the API does not have. Also a link to the developer documentation.
