@@ -6,12 +6,14 @@
 2. [Downloading The API](#downloading-the-api)
 3. [Using The API](#using-the-api)
 4. [Making Changes](#making-changes)
-5. [Additional Information](#additional-information)
+5. [Copyright Information](#copyright-information)
 
 ## Introduction
 **This is a PMML API (proof-of-concept) written to test the limits of Ballerina's built-in XML library.**
 
 Ballerina is a general purpose, concurrent and strongly typed programming language offered by [WSO2](https://wso2.com/) with both textual and graphical syntaxes, optimized for integration.
+
+The Predictive Model Markup Language (PMML) is an XML-based language which provides a way for applications to define statistical and data mining models and to share models between PMML compliant applications.
 
 This API does not fully support all features of PMML nor all versions. The API is only supports PMML version 4.2 and the only PMML files that can be used are the ones that have one of the following types of machine learning models:
 * Linear Regression
@@ -19,7 +21,7 @@ This API does not fully support all features of PMML nor all versions. The API i
 * Logistic Regression
 * Classification
 
-All of the above machine learning models can be defined by the `<RegressionModel>` element in PMML.
+*All of the above machine learning models can be defined by the `<RegressionModel>` element in PMML.*
 
 ## Downloading The API
 To download the API you can either clone the repository to your local machine by typing the following git command,
@@ -138,18 +140,30 @@ The expected result of the above element should be,
 
 Some sample values for the iris data set can be found [here](https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data) which can be used as inputs.
 
-|Function Name|Description|Parameters|
-|:---:|---|---|
-|predict(**xml** pmml, **xml** data|Based on the ML model defined in the <PMML> element will be redirected to the necessary function|**pmml** - The PMML element to be used <br/> **data** - The independent values entered by the user|
-|isValid(**xml** pmml)|Checks whether the given xml argument has a valid <PMML> element|**pmml** - The PMML element to be used|
-|isPredictable(**xml** pmml)|Checks whether the given <PMML> element can be predictable using the API|**pmml** - The PMML element to be used|
-|isDataElementValid(**xml** data)|Checks whether the <data> element given by the user is valid|**data** - The data element entered by the user|
-|getModelType(**xml** pmml)|Gets the type of the ML model the <PMML> element is using|**pmml** - THe PMML element to be used|
-|getVersion(**xml** pmml)|Gets the type of the ML model the <PMML> element is using|**pmml** - The PMML element to be used|
-|readXMLFromFile(**string** filePath)|Reads data from a file and converts it to an XML object|**filePath** - The relative path in which the file can be found|
+| Function Name | Description | Parameters | Returns |
+| :---: | :--- | :--- | :--- |
+| predict (**xml** pmml, **xml** data | Predicts the outcome of the  | **pmml** - The PMML element to be used <br/> **data** - The independent values entered by the user | add return type |
+| isValid (**xml** pmml) | Checks whether the given xml argument has a valid <PMML> element | **pmml** - The PMML element to be used | add return type |
+| isPredictable (**xml** pmml) | Checks whether the given <PMML> element can be predictable using the API | **pmml** - The PMML element to be used | add return type |
+| isDataElementValid (**xml** data) | Checks whether the <data> element given by the user is valid | **data** - The data element entered by the user | add return type |
+| getModelType (**xml** pmml) | Gets the type of the ML model the <PMML> element is using | **pmml** - THe PMML element to be used | add return type |
+| getVersion (**xml** pmml) | Gets the type of the ML model the <PMML> element is using | **pmml** - The PMML element to be used | add return type |
+| readXMLFromFile (**string** filePath) | Reads data from a file and converts it to an XML object | **filePath** - The relative path in which the file can be found | add return type |
 
 ## Making Changes
-If you would like to contribute to this repository feel free to do so. Check out the [Developer Guide](https://github.com/moizalicious/ballerina-pmml/blob/master/docs/dev-guide.md) to learn more about the source and the internal structure of the API.
+If you would like to contribute to this repository and help improve this API feel free to do so. Check out the [Developer Guide](https://github.com/moizalicious/ballerina-pmml/blob/master/docs/dev-guide.md) to learn more about the source and the internal structure of the API.
 
-## Additional Information
-Mostly about what features the API does not have. Also a link to the developer documentation.
+## Copyright Information
+Copyright 2017 WSO2 Inc.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.

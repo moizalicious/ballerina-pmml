@@ -36,16 +36,20 @@ function testIsDataElementValid () {
     test:assertTrue(isDataElementValid, "valid data element asserted false: ");
 }
 
-function testGetModelType() {
-    // TODO complete
+function testGetModelType () {
+    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/LinearRegression.pmml");
+    string modelType = pmml:getModelType(pmml);
+    println(modelType);
+    string expected = "{http://www.dmg.org/PMML-4_2}RegressionModel";
+    test:assertStringEquals(modelType, expected, "invalid regression model element shown: ");
 }
 
-function testGetVersion() {
-    // TODO complete
-}
-
-function testReadXMLFromFile() {
-    // TODO complete
+function testGetVersion () {
+    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/LinearRegression.pmml");
+    float versionNumber = pmml:getVersion(pmml);
+    println(versionNumber);
+    float expected = 4.2;
+    test:assertFloatEquals(versionNumber, expected, "failed to get valid version number: ");
 }
 
 function testLinearRegression () {
@@ -130,11 +134,11 @@ function testInteractionTerms () {
 function testRegressionIrisSetosa () {
     xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/RegressionIris.pmml");
     xml data = xml `<data>
-                    <Sepal.Length>5.1</Sepal.Length>
-                    <Sepal.Width>3.7</Sepal.Width>
-                    <Petal.Length>1.5</Petal.Length>
-                    <Petal.Width>0.4</Petal.Width>
-                </data>`;
+                        <Sepal.Length>5.1</Sepal.Length>
+                        <Sepal.Width>3.7</Sepal.Width>
+                        <Petal.Length>1.5</Petal.Length>
+                        <Petal.Width>0.4</Petal.Width>
+                    </data>`;
     var result, resultConversionError = (string)pmml:predict(pmml, data);
     if (resultConversionError != null) {
         throw resultConversionError;
@@ -147,11 +151,11 @@ function testRegressionIrisSetosa () {
 function testRegressionIrisVersicolor () {
     xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/RegressionIris.pmml");
     xml data = xml `<data>
-                    <Sepal.Length>5.5</Sepal.Length>
-                    <Sepal.Width>2.4</Sepal.Width>
-                    <Petal.Length>3.8</Petal.Length>
-                    <Petal.Width>1.1</Petal.Width>
-                </data>`;
+                        <Sepal.Length>5.5</Sepal.Length>
+                        <Sepal.Width>2.4</Sepal.Width>
+                        <Petal.Length>3.8</Petal.Length>
+                        <Petal.Width>1.1</Petal.Width>
+                    </data>`;
     var result, resultConversionError = (string)pmml:predict(pmml, data);
     if (resultConversionError != null) {
         throw resultConversionError;
@@ -164,11 +168,11 @@ function testRegressionIrisVersicolor () {
 function testRegressionIrisVirginica () {
     xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/RegressionIris.pmml");
     xml data = xml `<data>
-                    <Sepal.Length>7.2</Sepal.Length>
-                    <Sepal.Width>3.2</Sepal.Width>
-                    <Petal.Length>6.0</Petal.Length>
-                    <Petal.Width>1.8</Petal.Width>
-                </data>`;
+                        <Sepal.Length>7.2</Sepal.Length>
+                        <Sepal.Width>3.2</Sepal.Width>
+                        <Petal.Length>6.0</Petal.Length>
+                        <Petal.Width>1.8</Petal.Width>
+                    </data>`;
     var result, resultConversionError = (string)pmml:predict(pmml, data);
     if (resultConversionError != null) {
         throw resultConversionError;
@@ -181,10 +185,10 @@ function testRegressionIrisVirginica () {
 function testRegressionOzone () {
     xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/RegressionOzone.pmml");
     xml data = xml `<data>
-                    <temp>30</temp>
-                    <ibh>1.21</ibh>
-                    <ibt>0.032</ibt>
-                </data>`;
+                        <temp>30</temp>
+                        <ibh>1.21</ibh>
+                        <ibt>0.032</ibt>
+                    </data>`;
     var result, resultConversionError = (float)pmml:predict(pmml, data);
     if (resultConversionError != null) {
         throw resultConversionError;
