@@ -155,6 +155,7 @@ For an example,
 ```
 
 Other public functions that are available to you via the PMML API are defined below.
+
 | Function Name | Description | Parameters | Returns |
 | :---: | :--- | :--- | :--- |
 | predict (**xml** pmml, **xml** data | Predicts the outcome of the  | **pmml** - The PMML element to be used <br/> **data** - The independent values entered by the user | add return type |
