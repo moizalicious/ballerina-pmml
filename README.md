@@ -154,7 +154,7 @@ For an example,
 </data>
 ```
 
-**To know more about the other public functions provided by the API check out the [User Guide](addLinkHere)**
+**To know more about the other public functions provided by the API check out the [User Guide](https://github.com/moizalicious/ballerina-pmml/blob/master/docs/user-guide.md)**
 
 ## Making Changes
 If you would like to contribute to this repository and help improve this API feel free to do so. Check out the [Developer Guide](https://github.com/moizalicious/ballerina-pmml/blob/master/docs/dev-guide.md) to learn more about the source and the internal structure of the API.
