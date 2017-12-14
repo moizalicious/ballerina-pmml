@@ -15,7 +15,7 @@ Ballerina is a general purpose, concurrent and strongly typed programming langua
 
 The Predictive Model Markup Language (PMML) is an XML-based language which provides a way for applications to define statistical and data mining models and to share models between PMML compliant applications.
 
-This API does not fully support all features of PMML nor all versions. The API only supports PMML version 4.2 and the only PMML files that can be used are the ones that contain one of the following machine learning model types:
+This API does not fully support all features of PMML nor all versions. The API only supports PMML version 4.2 and the only PMML files that can be used are the ones that contain one of the following machine learning models:
 * Linear Regression
 * Polynomial Regression
 * Logistic Regression
@@ -31,16 +31,16 @@ Or you can download the source files by clicking on one of the following links,
 * [zip (v1.0-alpha)](https://github.com/moizalicious/ballerina-pmml/archive/v1.0-alpha.zip)
 * [tar.gz (v1.0-alpha)](https://github.com/moizalicious/ballerina-pmml/archive/v1.0-alpha.tar.gz)
 
-Extract and open the file, then copy the `ballerina` folder provided to your own Ballerina project. Once the folder is added to your project you can start using the PMML API by importing the `pmml` package in your code by typing `import ballerina.pmml;`
+Extract and open the downloaded file, then copy the `ballerina` folder provided to your own Ballerina project. Once the folder is added to your project you can start using the PMML API by importing the `pmml` package in your code by typing `import ballerina.pmml;`
 
-![Using The PMML API](https://raw.githubusercontent.com/moizalicious/ballerina-pmml/master/docs/imgs/pmmlShow.jpg)
+![Using The PMML API](https://raw.githubusercontent.com/moizalicious/ballerina-pmml/master/docs/imgs/pmmlSample.jpg)
 
 ## Using The API
 To predict values using this API with a machine learning model, you need two things,
 1. The PMML file of that respective machine learning model.
 2. The independent values that is to be fed into the machine learning model to predict an outcome.
 
-Both the PMML file and the independent values should be Ballerina `xml` objects. The PMML XML object must have the `<PMML>` element as the root element and should follow the XML Schema of PMML version 4.2.
+Both the PMML file and the independent values should be of Ballerina `xml` type. The PMML XML object must have the `<PMML>` element as the root element and should follow the XML Schema of PMML version 4.2.
 
 The independent values must be added in the following XML format,
 ```xml
@@ -53,7 +53,7 @@ The independent values must be added in the following XML format,
 ```
 Where the root element must always be `<data>` and the child elements must have the same names that are defined in the name attribute in the data field elements of the PMML element's data dictionary (besides the target element).
 
-Once we have these two XML objects, we have to add them as arguments to the function `predict(xml pmml, xml data)` to obtain the predicted value. The outcome is returned as a Ballerina `any` typed object. An example is given below.
+Once we have these two XML objects, we have to add them as arguments to the function `predict(xml pmml, xml data)` to obtain the predicted value. The outcome is returned as a Ballerina `any` type variable. An example is given below.
 
 ### Example For Classification Using The Iris Data Set
 The following XML code is a trained classification model in the form of PMML for the iris data set. Using this machine learning model we can predict which species a flower would come under (setosa, versicolor or verginica), based on the flower's sepal length, sepal width, petal length & petal width. To do this, download the following XML code and save it as `RegressionIris.pmml` in your Ballerina project.
@@ -104,10 +104,10 @@ The following XML code is a trained classification model in the form of PMML for
 
 The PMML file has 5 `<DataField>` elements,
 * Species
-* Sepal.Length
-* Sepal.Width
-* Petal.Length
-* Petal.Width
+* Sepal Length
+* Sepal Width
+* Petal Length
+* Petal Width
 
 Since 'Species' is the target that we are trying to predict (as defined by the `usageType` attribute in the `<MiningSchema>` element), we do not add any values for that. So if we want to predict what kind of species a flower with sepal length = 5.1, sepal width = 3.7, petal length = 1.5 and petal width = 0.4 comes under. We write the `<data>` element like this,
 ```xml
@@ -138,10 +138,10 @@ function main (string[]args) {
     println(result);
 }
 ```
-The output of the above code is shown below,
+The output of the above code is,
 > setosa
 
-This means that the species the flower with sepal length = 5.1, sepal width = 3.7, petal length = 1.5 and petal width = 0.4 is predicted to come under the *setosa* category. You can change the values yourself and see how the outcome changes. To see whether the model is accurate you can use real data from [here](https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data) and see whether the expected outcome is printed in the console.
+This means that the species the flower with sepal length = 5.1, sepal width = 3.7, petal length = 1.5 and petal width = 0.4 is predicted to come under the *setosa* category. You can change the values yourself and see how the outcome changes. **To see whether the model is accurate you can use real data from [here](https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data) and see whether the expected outcome is printed in the console.**
 
 *Note that the inputs in the data element do not always have to be continuous (i.e numerical), you can enter categorical values as well based on the PMML code requirements*
 
@@ -154,17 +154,7 @@ For an example,
 </data>
 ```
 
-Other public functions that are available to you via the PMML API are defined below.
-
-| Function Name | Description | Parameters | Returns |
-| :---: | :--- | :--- | :--- |
-| predict (**xml** pmml, **xml** data | Predicts the outcome of the  | **pmml** - The PMML element to be used <br/> **data** - The independent values entered by the user | add return type |
-| isValid (**xml** pmml) | Checks whether the given xml argument has a valid <PMML> element | **pmml** - The PMML element to be used | add return type |
-| isPredictable (**xml** pmml) | Checks whether the given <PMML> element can be predictable using the API | **pmml** - The PMML element to be used | add return type |
-| isDataElementValid (**xml** data) | Checks whether the <data> element given by the user is valid | **data** - The data element entered by the user | add return type |
-| getModelType (**xml** pmml) | Gets the type of the ML model the <PMML> element is using | **pmml** - THe PMML element to be used | add return type |
-| getVersion (**xml** pmml) | Gets the type of the ML model the <PMML> element is using | **pmml** - The PMML element to be used | add return type |
-| readXMLFromFile (**string** filePath) | Reads data from a file and converts it to an XML object | **filePath** - The relative path in which the file can be found | add return type |
+**To know more about the other public functions provided by the API check out the [User Guide](addLinkHere)**
 
 ## Making Changes
 If you would like to contribute to this repository and help improve this API feel free to do so. Check out the [Developer Guide](https://github.com/moizalicious/ballerina-pmml/blob/master/docs/dev-guide.md) to learn more about the source and the internal structure of the API.
