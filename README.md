@@ -58,7 +58,7 @@ Once we have these two XML objects, we have to add them as arguments to the func
 ### Example For Classification Using The Iris Data Set
 The following XML code is a trained classification model in the form of PMML for the iris data set. Using this machine learning model we can predict which species a flower would come under (setosa, versicolor or verginica), based on the flower's sepal length, sepal width, petal length & petal width. To do this, download the following XML code and save it as `RegressionIris.pmml` in your Ballerina project.
 
-**Click [here](addLinkHere) to download the following PMML file.**
+**Click [here](https://raw.githubusercontent.com/moizalicious/ballerina-pmml/master/ml/pmml/test/res/RegressionIris.pmml) to download the following PMML file.**
 ```xml
 <PMML version="4.2" xmlns="http://www.dmg.org/PMML-4_2">
     <Header copyright="Copyright (c) 2013 Vfed" description="Multinomial Logistic Model">
