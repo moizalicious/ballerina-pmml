@@ -124,7 +124,7 @@ The following code shows how to use the `predict()` function in the PMML API to 
 import ml.pmml;
 
 function main (string[]args) {
-    // Read the file as an Ballerina XML object
+    // Read the file as a Ballerina XML object
     xml pmml = pmml:readXMLFromFile("RegressionIris.pmml");
     // Create the data XML with the independent values
     xml data = xml `<data>

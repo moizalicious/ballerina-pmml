@@ -322,7 +322,7 @@ Contains all the functions that are concerned with handling machine learning mod
 
 #### Running Tests
 The API has functions that you can use to see whether everything works. To do that open the terminal in you project folder and type the following command to run the test functions,
-> ~$ ballerina test ballerina/pmml/test
+> ~$ ballerina test ml/pmml/test
 
 #### Creating A Test Function
-All the test functions are written in `ballerina/pmml/test/Tests.bal`. You can edit this file and add your own test functions if you like. After writing your own functions, run the above command to run your tests. *To learn more about the ballerina test API checkout the [Ballerina API Documentation](https://ballerinalang.org/docs/api/0.95.4/).*
+All the test functions are written in `ml/pmml/test/Tests.bal`. You can edit this file and add your own test functions if you like. After writing your own functions, run the above command to run your tests. *To learn more about the ballerina test API checkout the [Ballerina API Documentation](https://ballerinalang.org/docs/api/0.95.4/).*
