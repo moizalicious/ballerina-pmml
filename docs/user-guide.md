@@ -1,7 +1,7 @@
 # Ballerina PMML API User Guide
-This documentations contains information about all the 
+This documentations contains information about all the
 
-### Public Functions of 'ballerina.pmml' Package
+### Public Functions of the 'ml.pmml' Package
 
 #### Functions
 * [predict (xml pmml, xml data) (any)](#predict)

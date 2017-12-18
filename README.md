@@ -31,9 +31,9 @@ Or you can download the source files by clicking on one of the following links,
 * [zip (v1.0-alpha)](https://github.com/moizalicious/ballerina-pmml/archive/v1.0-alpha.zip)
 * [tar.gz (v1.0-alpha)](https://github.com/moizalicious/ballerina-pmml/archive/v1.0-alpha.tar.gz)
 
-Extract and open the downloaded file, then copy the `ballerina` folder provided to your own Ballerina project. Once the folder is added to your project you can start using the PMML API by importing the `pmml` package in your code by typing `import ballerina.pmml;`
+Extract and open the downloaded file, then copy the `ml` folder provided to your own Ballerina project. Once the folder is added to your project you can start using the PMML API by importing the `pmml` package in your code by typing `import ml.pmml;`
 
-![Using The PMML API](https://raw.githubusercontent.com/moizalicious/ballerina-pmml/master/docs/imgs/pmmlSample.jpg)
+![Using The PMML API](https://raw.githubusercontent.com/moizalicious/ballerina-pmml/master/docs/imgs/pmmlSample.png)
 
 ## Using The API
 To predict values using this API with a machine learning model, you need two things,
@@ -58,7 +58,7 @@ Once we have these two XML objects, we have to add them as arguments to the func
 ### Example For Classification Using The Iris Data Set
 The following XML code is a trained classification model in the form of PMML for the iris data set. Using this machine learning model we can predict which species a flower would come under (setosa, versicolor or verginica), based on the flower's sepal length, sepal width, petal length & petal width. To do this, download the following XML code and save it as `RegressionIris.pmml` in your Ballerina project.
 
-**Click [here](https://raw.githubusercontent.com/moizalicious/ballerina-pmml/master/ballerina/pmml/test/res/RegressionIris.pmml) to download the following PMML file.**
+**Click [here](addLinkHere) to download the following PMML file.**
 ```xml
 <PMML version="4.2" xmlns="http://www.dmg.org/PMML-4_2">
     <Header copyright="Copyright (c) 2013 Vfed" description="Multinomial Logistic Model">
@@ -109,29 +109,29 @@ The PMML file has 5 `<DataField>` elements,
 * Petal Length
 * Petal Width
 
-Since 'Species' is the target that we are trying to predict (as defined by the `usageType` attribute in the `<MiningSchema>` element), we do not add any values for that. So if we want to predict what kind of species a flower with sepal length = 5.1, sepal width = 3.7, petal length = 1.5 and petal width = 0.4 comes under. We write the `<data>` element like this,
+Since 'Species' is the target that we are trying to predict (as defined by the `usageType` attribute in the `<MiningSchema>` element), we do not add any values for that. So if we want to predict what kind of species a flower with sepal length = 5.1, sepal width = 3.5, petal length = 1.4 and petal width = 0.2 comes under. We write the `<data>` element like this,
 ```xml
 <data>
     <Sepal.Length>5.1</Sepal.Length>
-    <Sepal.Width>3.7</Sepal.Width>
-    <Petal.Length>1.5</Petal.Length>
-    <Petal.Width>0.4</Petal.Width>
+    <Sepal.Width>3.5</Sepal.Width>
+    <Petal.Length>1.4</Petal.Length>
+    <Petal.Width>0.2</Petal.Width>
 </data>
 ```
 
 The following code shows how to use the `predict()` function in the PMML API to get the predicted species of the flower based on the `<data>` element above (the `RegressionIris.pmml` file is read using the `readXMLFromFile()` function provided by the API),
 ```ballerina
-import ballerina.pmml;
+import ml.pmml;
 
 function main (string[]args) {
     // Read the file as an Ballerina XML object
     xml pmml = pmml:readXMLFromFile("RegressionIris.pmml");
     // Create the data XML with the independent values
     xml data = xml `<data>
-                        <Petal.Width>0.4</Petal.Width>
-                        <Petal.Length>1.5</Petal.Length>
-                        <Sepal.Width>3.7</Sepal.Width>
                         <Sepal.Length>5.1</Sepal.Length>
+                        <Sepal.Width>3.5</Sepal.Width>
+                        <Petal.Length>1.4</Petal.Length>
+                        <Petal.Width>0.2</Petal.Width>
                     </data>`;
     // Predict the outcome and print it to the console                
     any result = pmml:predict(pmml, data);                
@@ -141,7 +141,7 @@ function main (string[]args) {
 The output of the above code is,
 > setosa
 
-This means that the species the flower with sepal length = 5.1, sepal width = 3.7, petal length = 1.5 and petal width = 0.4 is predicted to come under the *setosa* category. You can change the values yourself and see how the outcome changes. **To see whether the model is accurate you can use real data from [here](https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data) and see whether the expected outcome is printed in the console.**
+This means that the species the flower with sepal length = 5.1, sepal width = 3.5, petal length = 1.4 and petal width = 0.2 is predicted to come under the *setosa* category. You can change the values yourself and see how the outcome changes. **To see whether the model is accurate you can use real data from [here](https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data) and see whether the expected outcome is printed in the console.**
 
 *Note that the inputs in the data element do not always have to be continuous (i.e numerical), you can enter categorical values as well based on the PMML code requirements*
 

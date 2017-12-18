@@ -1,10 +1,10 @@
-package ballerina.pmml.test;
+package ml.pmml.test;
 
 import ballerina.test;
-import ballerina.pmml;
+import ml.pmml;
 
 function testIsValid () {
-    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/LinearRegression.pmml");
+    xml pmml = pmml:readXMLFromFile("ml/pmml/test/res/LinearRegression.pmml");
     var isValid, invalidPMMLError = pmml:isValid(pmml);
     println(isValid);
     if (invalidPMMLError != null) {
@@ -14,7 +14,7 @@ function testIsValid () {
 }
 
 function testIsPredictable () {
-    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/LinearRegression.pmml");
+    xml pmml = pmml:readXMLFromFile("ml/pmml/test/res/LinearRegression.pmml");
     var isPredictable, unpredictablePMMLError = pmml:isPredictable(pmml);
     println(isPredictable);
     if (unpredictablePMMLError != null) {
@@ -37,7 +37,7 @@ function testIsDataElementValid () {
 }
 
 function testGetModelType () {
-    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/LinearRegression.pmml");
+    xml pmml = pmml:readXMLFromFile("ml/pmml/test/res/LinearRegression.pmml");
     string modelType = pmml:getModelType(pmml);
     println(modelType);
     string expected = "{http://www.dmg.org/PMML-4_2}RegressionModel";
@@ -45,7 +45,7 @@ function testGetModelType () {
 }
 
 function testGetVersion () {
-    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/LinearRegression.pmml");
+    xml pmml = pmml:readXMLFromFile("ml/pmml/test/res/LinearRegression.pmml");
     float versionNumber = pmml:getVersion(pmml);
     println(versionNumber);
     float expected = 4.2;
@@ -53,7 +53,7 @@ function testGetVersion () {
 }
 
 function testLinearRegression () {
-    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/LinearRegression.pmml");
+    xml pmml = pmml:readXMLFromFile("ml/pmml/test/res/LinearRegression.pmml");
     xml data = xml `<data>
                         <age>19</age>
                         <salary>20000</salary>
@@ -69,7 +69,7 @@ function testLinearRegression () {
 }
 
 function testPolynomialRegression () {
-    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/PolynomialRegression.pmml");
+    xml pmml = pmml:readXMLFromFile("ml/pmml/test/res/PolynomialRegression.pmml");
     xml data = xml `<data>
                         <salary>20000</salary>
                         <car_location>carpark</car_location>
@@ -84,7 +84,7 @@ function testPolynomialRegression () {
 }
 
 function testLogisticRegression () {
-    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/LogisticRegression.pmml");
+    xml pmml = pmml:readXMLFromFile("ml/pmml/test/res/LogisticRegression.pmml");
     xml data = xml `<data>
                         <x1>2.7</x1>
                         <x2>2.2</x2>
@@ -99,7 +99,7 @@ function testLogisticRegression () {
 }
 
 function testClassification () {
-    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/Classification.pmml");
+    xml pmml = pmml:readXMLFromFile("ml/pmml/test/res/Classification.pmml");
     xml data = xml `<data>
                         <age>19</age>
                         <work>8</work>
@@ -116,7 +116,7 @@ function testClassification () {
 }
 
 function testInteractionTerms () {
-    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/InteractionTerms.pmml");
+    xml pmml = pmml:readXMLFromFile("ml/pmml/test/res/InteractionTerms.pmml");
     xml data = xml `<data>
                         <sex>male</sex>
                         <age>19</age>
@@ -132,7 +132,7 @@ function testInteractionTerms () {
 }
 
 function testRegressionIrisSetosa () {
-    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/RegressionIris.pmml");
+    xml pmml = pmml:readXMLFromFile("ml/pmml/test/res/RegressionIris.pmml");
     xml data = xml `<data>
                         <Sepal.Length>5.1</Sepal.Length>
                         <Sepal.Width>3.7</Sepal.Width>
@@ -149,7 +149,7 @@ function testRegressionIrisSetosa () {
 }
 
 function testRegressionIrisVersicolor () {
-    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/RegressionIris.pmml");
+    xml pmml = pmml:readXMLFromFile("ml/pmml/test/res/RegressionIris.pmml");
     xml data = xml `<data>
                         <Sepal.Length>5.5</Sepal.Length>
                         <Sepal.Width>2.4</Sepal.Width>
@@ -166,7 +166,7 @@ function testRegressionIrisVersicolor () {
 }
 
 function testRegressionIrisVirginica () {
-    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/RegressionIris.pmml");
+    xml pmml = pmml:readXMLFromFile("ml/pmml/test/res/RegressionIris.pmml");
     xml data = xml `<data>
                         <Sepal.Length>7.2</Sepal.Length>
                         <Sepal.Width>3.2</Sepal.Width>
@@ -183,7 +183,7 @@ function testRegressionIrisVirginica () {
 }
 
 function testRegressionOzone () {
-    xml pmml = pmml:readXMLFromFile("ballerina/pmml/test/res/RegressionOzone.pmml");
+    xml pmml = pmml:readXMLFromFile("ml/pmml/test/res/RegressionOzone.pmml");
     xml data = xml `<data>
                         <temp>30</temp>
                         <ibh>1.21</ibh>

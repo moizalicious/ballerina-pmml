@@ -1,4 +1,4 @@
-package ballerina.pmml;
+package ml.pmml;
 
 function getDataDictionaryElement (xml pmml) (xml) {
     // Gets the <DataDictionary> element from the <PMML>.

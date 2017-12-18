@@ -1,7 +1,7 @@
 # Ballerina PMML API Dev Guide
 
 ### Contents
-* [Private Functions of 'ballerina.pmml' Package](#privateFunctions)
+* [Private Functions of the 'ml.pmml' Package](#privateFunctions)
     * [Data Dictionary](#data-dictionary)
         * [getDataDictionary (xml pmml) (xml)](#getDataDictionary)
         * [getDataFieldElements (xml dataDictionary) (xml)](#getDataFieldElements)
@@ -30,7 +30,7 @@
     * [Running Tests](#running-tests)
     * [Creating A Test Function](#creating-a-test-function)
 
-### <a name = "privateFunctions"> Private Functions of 'ballerina.pmml' Package </a>
+### <a name = "privateFunctions"> Private Functions of the 'ml.pmml' Package </a>
 
 #### Data Dictionary
 Contains all functions concerning the `<DataDictionary>` and `<DataField>` elements.

@@ -1,4 +1,4 @@
-package ballerina.pmml;
+package ml.pmml;
 
 import ballerina.file;
 import ballerina.io;

@@ -1,4 +1,4 @@
-package ballerina.pmml;
+package ml.pmml;
 
 function getMiningSchemaElement (xml modelElement)(xml) {
     // Gets the <MiningSchema> element from the model element of the PMML.

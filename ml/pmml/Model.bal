@@ -1,4 +1,4 @@
-package ballerina.pmml;
+package ml.pmml;
 
 public function predict (xml pmml, xml data) (any) {
     // Based on the ML model defined in the <PMML> element,

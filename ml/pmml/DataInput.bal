@@ -1,4 +1,4 @@
-package ballerina.pmml;
+package ml.pmml;
 
 public function isDataElementValid (xml data) (boolean isDataElementValid, error err) {
     // Checks whether the <data> element given by the user is valid.
