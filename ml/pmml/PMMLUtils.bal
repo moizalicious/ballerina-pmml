@@ -107,7 +107,7 @@ public function getVersion (xml pmml) (float) {
     return pmmlVersion;
 }
 
-public function readXMLFromFile (string filePath) (xml) {
+public function readFileAsXML (string filePath) (xml) {
     // Reads data from a file and converts it to an XML object.
     file:File file = {path:filePath};
     io:ByteChannel byteChannel = file.openChannel("r");
