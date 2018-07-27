@@ -1,21 +1,21 @@
-# PMML API For Ballerina
-**A "proof-of-concept" API written in [Ballerina](https://ballerinalang.org/) for Ballerina to read and predict values using machine learning models defined with [PMML](http://dmg.org/pmml/pmml-v4-2-1.html)**
+# PMML Library For Ballerina
+**A "proof-of-concept" Library written in [Ballerina](https://ballerinalang.org/) for Ballerina to read and predict values using machine learning models defined with [PMML](http://dmg.org/pmml/pmml-v4-2-1.html)**
 
 ### Contents
 1. [Introduction](#introduction)
-2. [Downloading The API](#downloading-the-api)
-3. [Using The API](#using-the-api)
+2. [Downloading The Library](#downloading-the-library)
+3. [Using The Library](#using-the-library)
 4. [Making Changes](#making-changes)
 5. [Copyright Information](#copyright-information)
 
 ## Introduction
-**This is a PMML API (proof-of-concept) written to test the limits of Ballerina's built-in XML library.**
+**This is a PMML Library (proof-of-concept) written to test the limits of Ballerina's built-in XML library.**
 
 Ballerina is a general purpose, concurrent and strongly typed programming language offered by [WSO2](https://wso2.com/) with both textual and graphical syntaxes, optimized for integration.
 
 The Predictive Model Markup Language (PMML) is an XML-based language which provides a way for applications to define statistical and data mining models and to share models between PMML compliant applications.
 
-This API does not fully support all features of PMML nor all versions. The API only supports PMML version 4.2 and the only PMML files that can be used are the ones that contain one of the following machine learning models:
+This Library does not fully support all features of PMML nor all versions. The Library only supports PMML version 4.2 and the only PMML files that can be used are the ones that contain one of the following machine learning models:
 * Linear Regression
 * Polynomial Regression
 * Logistic Regression
@@ -23,20 +23,20 @@ This API does not fully support all features of PMML nor all versions. The API o
 
 *All of the above machine learning models are defined by the `<RegressionModel>` element in PMML.*
 
-## Downloading The API
-To download the API you can either clone the repository to your local machine by typing the following git command,
+## Downloading The Library
+To download the Library you can either clone the repository to your local machine by typing the following git command,
 > ~$ git clone https://github.com/moizalicious/ballerina-pmml
 
 Or you can download the source files by clicking on one of the following links,
 * [zip (v1.0-alpha)](https://github.com/moizalicious/ballerina-pmml/archive/v1.0-alpha.zip)
 * [tar.gz (v1.0-alpha)](https://github.com/moizalicious/ballerina-pmml/archive/v1.0-alpha.tar.gz)
 
-Extract and open the downloaded file, then copy the `ml` folder provided to your own Ballerina project. Once the folder is added to your project you can start using the PMML API by importing the `pmml` package in your code by typing `import ml.pmml;`
+Extract and open the downloaded file, then copy the `ml` folder provided to your own Ballerina project. Once the folder is added to your project you can start using the PMML Library by importing the `pmml` package in your code by typing `import ml.pmml;`
 
-![Using The PMML API](https://raw.githubusercontent.com/moizalicious/ballerina-pmml/master/docs/imgs/pmmlSample.png)
+![Using The PMML Library](https://raw.githubusercontent.com/moizalicious/ballerina-pmml/master/docs/imgs/pmmlSample.png)
 
-## Using The API
-To predict values using this API with a machine learning model, you need two things,
+## Using The Library
+To predict values using this Library with a machine learning model, you need two things,
 1. The PMML file of that respective machine learning model.
 2. The independent values that is to be fed into the machine learning model to predict an outcome.
 
@@ -119,7 +119,7 @@ Since 'Species' is the target that we are trying to predict (as defined by the `
 </data>
 ```
 
-The following code shows how to use the `predict()` function in the PMML API to get the predicted species of the flower based on the `<data>` element above (the `RegressionIris.pmml` file is read using the `readXMLFromFile()` function provided by the API),
+The following code shows how to use the `predict()` function in the PMML Library to get the predicted species of the flower based on the `<data>` element above (the `RegressionIris.pmml` file is read using the `readXMLFromFile()` function provided by the Library),
 ```ballerina
 import ml.pmml;
 
@@ -154,10 +154,10 @@ For an example,
 </data>
 ```
 
-**To know more about the other public functions provided by the API check out the [User Guide](https://github.com/moizalicious/ballerina-pmml/blob/master/docs/user-guide.md)**
+**To know more about the other public functions provided by the Library check out the [User Guide](https://github.com/moizalicious/ballerina-pmml/blob/master/docs/user-guide.md)**
 
 ## Making Changes
-If you would like to contribute to this repository and help improve this API feel free to do so. Check out the [Developer Guide](https://github.com/moizalicious/ballerina-pmml/blob/master/docs/dev-guide.md) to learn more about the source and the internal structure of the API.
+If you would like to contribute to this repository and help improve this Library feel free to do so. Check out the [Developer Guide](https://github.com/moizalicious/ballerina-pmml/blob/master/docs/dev-guide.md) to learn more about the source and the internal structure of the Library.
 
 ## Copyright Information
 Copyright 2017 WSO2 Inc.
