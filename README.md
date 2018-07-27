@@ -160,7 +160,7 @@ For an example,
 If you would like to contribute to this repository and help improve this Library feel free to do so. Check out the [Developer Guide](https://github.com/moizalicious/ballerina-pmml/blob/master/docs/dev-guide.md) to learn more about the source and the internal structure of the Library.
 
 ## Copyright Information
-Copyright 2017 WSO2 Inc.
+Copyright 2017 Moiz Mansoor Ali.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
