@@ -3,8 +3,8 @@
 
 ### Contents
 1. [Introduction](#introduction)
-2. [Downloading The API](#downloading-the-library)
-3. [Using The API](#using-the-library)
+2. [Downloading The Library](#downloading-the-library)
+3. [Using The Library](#using-the-library)
 4. [Making Changes](#making-changes)
 5. [Copyright Information](#copyright-information)
 
@@ -154,10 +154,10 @@ For an example,
 </data>
 ```
 
-**To know more about the other public functions provided by the API check out the [User Guide](https://github.com/moizalicious/ballerina-pmml/blob/master/docs/user-guide.md)**
+**To know more about the other public functions provided by the Library check out the [User Guide](https://github.com/moizalicious/ballerina-pmml/blob/master/docs/user-guide.md)**
 
 ## Making Changes
-If you would like to contribute to this repository and help improve this API feel free to do so. Check out the [Developer Guide](https://github.com/moizalicious/ballerina-pmml/blob/master/docs/dev-guide.md) to learn more about the source and the internal structure of the API.
+If you would like to contribute to this repository and help improve this Library feel free to do so. Check out the [Developer Guide](https://github.com/moizalicious/ballerina-pmml/blob/master/docs/dev-guide.md) to learn more about the source and the internal structure of the Library.
 
 ## Copyright Information
 Copyright 2017 WSO2 Inc.
