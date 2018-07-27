@@ -157,7 +157,7 @@ For an example,
 **To know more about the other public functions provided by the library check out the [User Guide](https://github.com/moizalicious/ballerina-pmml/blob/master/docs/user-guide.md)**
 
 ## Making Changes
-If you would like to contribute to this repository and help improve this llbrary feel free to do so. Check out the [Developer Guide](https://github.com/moizalicious/ballerina-pmml/blob/master/docs/dev-guide.md) to learn more about the source and the internal structure of the library.
+If you would like to contribute to this repository and help improve this library feel free to do so. Check out the [Developer Guide](https://github.com/moizalicious/ballerina-pmml/blob/master/docs/dev-guide.md) to learn more about the source and the internal structure of the library.
 
 ## Copyright Information
 Copyright 2017 Moiz Mansoor Ali.
